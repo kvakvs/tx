@@ -16,7 +16,7 @@
 %% ===================================================================
 
 start() ->
-  application:start(sasl),
+%%   application:start(sasl),
   application:start(tx).
 
 start(_StartType, _StartArgs) ->
