@@ -16,10 +16,12 @@
 %% ===================================================================
 
 start() ->
+  application:start(sasl),
   application:start(tx).
 
 start(_StartType, _StartArgs) ->
   start_web(),
+  tx_store:start(),
   tx_sup:start_link().
 
 stop(_State) ->
@@ -27,16 +29,26 @@ stop(_State) ->
 
 start_web() ->
   inets:start(),
-  RootDir    = "./priv/",
-  TxPort     = 20000,
-  TxHost     = {127, 0, 0, 1},
-  Options    = [ {port, TxPort}
+  {ok, TxPort}   = application:get_env(tx, port),
+  {ok, ConfHost} = application:get_env(tx, host),
+  {ok, TxHost}   = inet_parse:address(ConfHost),
+
+  Options    = [ {modules, [ mod_esi
+                           , mod_get ]}
+
+               , {port, TxPort}
                , {server_name, "127.0.0.1"}
-               , {server_root, filename:absname(RootDir ++ "/..")}
-               , {document_root, filename:absname(RootDir)}
+               , {server_root, filename:absname(".")}
+               , {document_root, filename:absname("priv/")}
                , {bind_address, TxHost}
-               , {modules, [mod_esi]}
+
                , {erl_script_alias, {"/tx", [tx_esi, io]}}
+
+               , {mime_types, [ {"html", "text/html"}
+                              , {"css", "text/css"}
+                              , {"js", "application/x-javascript"}
+                              ]}
+               , {mime_type, "application/octet-stream"}
                ],
   {ok, _Pid} = inets:start(httpd, Options),
   io:format("[term explorer] http started on localhost (port ~p)~n", [TxPort]).

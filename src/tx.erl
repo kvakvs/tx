@@ -7,9 +7,16 @@
 -module(tx).
 
 %% API
--export([]).
+-export([show/1]).
 
-%% show(Term) ->
-%%   Id = tx_store:publish(Term),
-%%   Url = "/tx/tx_esi:show",
-%%   io:format("[term explorer] ~s~n", [Url]).
+show(Term) ->
+  case application:start(tx) of
+    ok -> ok;
+    {error, {already_started, _}} -> ok
+  end,
+  Id = tx_store:store(Term),
+  {ok, TxHost} = application:get_env(tx, host),
+  {ok, TxPort} = application:get_env(tx, port),
+  Url = lists:flatten(io_lib:format("http://~s:~p/tx/tx_esi:show?~s"
+                                   , [TxHost, TxPort, Id])),
+  Url.

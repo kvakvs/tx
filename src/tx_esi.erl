@@ -7,14 +7,20 @@
 -module(tx_esi).
 
 %% API
--export([show/3]).
+-export([show/3, list/3, delete/3]).
 
-show(Sid, _Env, _In) ->
-%%   try
-    Json = tx_term:to_json(erlang:process_info(self())),
-%%     io:format("~p~n", [Json]),
-    Resp = tx_mochijson2:encode(Json),
-    mod_esi:deliver(Sid, Resp).
-%%   catch T:E ->
-%%     io:format("~p:~p ~p~n", [T, E, erlang:get_stacktrace()])
-%%   end.
+show(Sid, Env, _In) ->
+  Id = list_to_binary(proplists:get_value(query_string, Env)),
+  Json = tx_term:to_json(tx_store:read(Id)),
+  Resp = tx_mochijson2:encode(Json),
+  mod_esi:deliver(Sid, Resp).
+
+delete(Sid, Env, _In) ->
+  Id = list_to_binary(proplists:get_value(query_string, Env)),
+  tx_store:delete(Id),
+  mod_esi:deliver(Sid, <<"ok">>).
+
+list(Sid, _Env, _In) ->
+  Json = tx_store:list_json(),
+  Resp = tx_mochijson2:encode(Json),
+  mod_esi:deliver(Sid, Resp).

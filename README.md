@@ -5,9 +5,9 @@ help you follow "know your data" paradigm. Basically it shows you your data in
 web browser via webserver listening to localhost. 
 
 Given an arbitrary term, saves it temporarily and creates an unique 
-URL to it (similar to Pastebin but with faster/manual expiration). Clicking in 
-your console window will open web browser and load a page with tree-like term 
-structure.
+URL to it (similar to Pastebin but with faster/manual expiration). Clicking the
+URL in your console window will open web browser and load a page with tree-like 
+term structure.
 
 Uses only standard Erlang libraries (inets), no external dependencies.
 

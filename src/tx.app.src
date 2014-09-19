@@ -1,12 +1,14 @@
 {application, tx,
- [
-  {description, "Term Explorer"},
-  {vsn, "0.1"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib
-                 ]},
-  {mod, { tx_app, []}},
-  {env, []}
- ]}.
+  [
+    {description, "Term Explorer"},
+    {vsn, "0.1"},
+    {registered, []},
+    {applications, [
+      kernel       ,
+      stdlib
+                   ]},
+    {mod, {tx_app, []}},
+    {env, [ {host, "127.0.0.1"}
+          , {port, 20000}
+          ]}
+  ]}.
