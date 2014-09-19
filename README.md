@@ -1,12 +1,21 @@
-# Term Explorer (TX)
+# Erlang Term Explorer (TX)
 
-A simple application to be used when debugging your apps. Given an arbitrary long nested (or 
-simple) term, saves it in memory and creates an unique URL to it (similar to Pastebin but 
-with faster expiration). Opening the URL displays a page with navigable tree-like term
-structure. Data is released automatically for garbage collection, or when you click release
-button.
+This app was created to fill the void in the data visualisation area. And to 
+help you follow "know your data" paradigm. Basically it shows you your data in 
+browser via webserver listening to localhost. 
+
+Given an arbitrary term, saves it temporarily and creates an unique 
+URL to it (similar to Pastebin but with faster/manual expiration). Clicking the 
+URL a page with tree-like term structure.
+
+Uses only standard Erlang libraries (inets), no external dependencies.
+
+# Running
+
+run manually via: `application:start(tx).` or it will be started automatically
+if you forget to do that. Default port is 20000, and default host is localhost.
 
 # Example
 
-X = erlang:process_info(self()).
-tx:tx(X).
+    X = erlang:process_info(self()).
+    tx:show(X). 
