@@ -1,0 +1,12 @@
+{application, tx,
+ [
+  {description, "Term Explorer"},
+  {vsn, "0.1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { tx_app, []}},
+  {env, []}
+ ]}.
