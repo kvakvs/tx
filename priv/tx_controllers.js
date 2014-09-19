@@ -13,3 +13,35 @@ txApp.controller('TxListCtrl', function ($scope, $http) {
     return hours + ':' + minutes + ':' + seconds;
   };
 });
+
+txApp.controller('TxShowCtrl', function ($scope, $http) {
+  $scope.show_id = window.location.hash.substring(1);
+
+  $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
+    $scope.term = data;
+  });
+});
+
+txApp.directive('collection', function () {
+  return {
+    restrict: "E",
+    replace: true,
+    scope: { collection: '=' },
+    template: "<ul><member ng-repeat='member in collection' member='member'></member></ul>"
+  }
+});
+
+txApp.directive('member', function ($compile) {
+  return {
+    restrict: "E",
+    replace: true,
+    scope: { member: '=' },
+    template: "<li>t={{member.t}} v={{member.v}}</li>",
+    link: function (scope, element, attrs) {
+      if (scope.member && angular.isArray(scope.member.v)) {
+        element.append("<collection collection='member.v'></collection>");
+        $compile(element.contents())(scope)
+      }
+    }
+  }
+});

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app>
+<html lang="en" ng-app="txApp">
 <head>
   <meta charset="utf-8">
   <title>Term eXplorer</title>
@@ -9,16 +9,27 @@
 </head>
 <body>
 
-<h1>Showing tx contents</h1>
+<div class="row">
+  <div class="col-lg-10 col-lg-offset-1">
+    <h1>Explorer cache contents</h1>
+
+    <p>To explore some Erlang term, in your Erlang shell type
+      <code>tx:show(X).</code> where X is the value to display. The term will
+      be saved in tx's ETS table and you will get a (hopefully) clickable URL
+      in your console window, or you can copy it and open in browser. Or refresh
+      this page and click the corresponding show button.</p>
+  </div>
+</div>
 
 <div class="row" ng-controller="TxListCtrl">
-  <div class="col-lg-12">
+  <div class="col-lg-10 col-lg-offset-1">
     <ul>
       <li ng-repeat="term in term_list">
-        <a href="#{{term.id}}"
-           class="btn btn-default btn-sm">{{term.id}}</a>
+        <a href="show.html#{{term.id}}"
+           class="btn btn-primary btn-sm">Show term id {{term.id}}</a>
         created {{unix_ts_to_date(term.created)}}
       </li>
+      <li ng-show="!term_list.length">No events</li>
     </ul>
   </div>
 </div>
