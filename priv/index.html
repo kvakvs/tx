@@ -7,10 +7,10 @@
   <script src="js/angular-1.2.0.min.js"></script>
   <script src="js/tx_controllers.js"></script>
 </head>
-<body>
+<body><div class="container-fluid">
 
 <div class="row">
-  <div class="col-lg-10 col-lg-offset-1">
+  <div class="col-lg-12">
     <h1>TX Cache Contents</h1>
 
     <p>To explore some Erlang term, in your Erlang shell type
@@ -24,17 +24,30 @@
 </div>
 
 <div class="row" ng-controller="TxListCtrl">
-  <div class="col-lg-10 col-lg-offset-1">
-    <ul>
-      <li ng-repeat="term in term_list">
-        <a href="show.html#{{term.id}}"
-           class="btn btn-primary btn-sm">Show term id {{term.id}}</a>
-        created {{unix_ts_to_date(term.created)}}
-      </li>
-      <li ng-show="!term_list.length">No events</li>
-    </ul>
+  <div class="col-lg-12">
+    <table class="table">
+      <tr ng-show="term_list.length">
+        <th>Click me</th>
+        <th>Created</th>
+        <th>Expires in</th>
+      </tr>
+      <tr ng-repeat="term in term_list">
+        <td>
+          <a href="show.html#{{term.id}}">Show term #{{term.id}}</a>
+        </td>
+        <td>
+          {{unix_ts_to_date(term.created)}}
+        </td>
+        <td>
+          NYI
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="alert alert-warning" role="alert" ng-show="!term_list.length">
+    No events yet. Please add some using <code>tx:show(Term).</code>
   </div>
 </div>
 
-</body>
+</div></body>
 </html>
