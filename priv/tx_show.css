@@ -34,3 +34,10 @@ span.float {
 span.integer {
   color: red;
 }
+span.tab {
+  padding-left: 24px;
+  color: #ccc;
+}
+span.tab:after {
+  content: "→";
+}

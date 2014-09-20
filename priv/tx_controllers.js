@@ -56,13 +56,13 @@ function html_term(term) {
     });
     result += ']</div>';
   } else if (term.t == 's') {
-    result += '&ldquo;<span class="value string">' + term.v + '</span>&rdquo;';
+    result += '&ldquo;<span class="value string">' + htmlq(term.v) + '</span>&rdquo;';
   } else if (term.t == 'a') {
     result += '&lsquo;<span class="value atom">' + term.v + '</span>&rsquo;';
   } else if (term.t == 'b') {
-    result += '<span class="value binary">' + term.v + '</span>';
+    result += '<span class="value binary">' + htmlq(term.v) + '</span>';
   } else if (term.t == 'bs') {
-    result += 'bits <span class="value binary">' + term.v + '</span>';
+    result += 'bits <span class="value binary">' + htmlq(term.v) + '</span>';
   } else if (term.t == 'p') {
     result += '<span class="value pid">' + term.v + '</span>';
   } else if (term.t == 'r') {
@@ -77,4 +77,9 @@ function html_term(term) {
     result += '<div class="value">' + term.v + '</div>';
   }
   return result;
+}
+
+function htmlq(q) {
+  return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab" />')
 }
