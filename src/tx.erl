@@ -10,11 +10,7 @@
 -export([show/1]).
 
 show(Term) ->
-  case application:start(tx) of
-    ok -> ok;
-    {error, {already_started, _}} -> ok
-  end,
-
+  tx_app:start(),
   Id = tx_store:store(Term),
   {ok, TxHost} = application:get_env(tx, host),
   {ok, TxPort} = application:get_env(tx, port),
