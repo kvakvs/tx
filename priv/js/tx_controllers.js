@@ -11,9 +11,13 @@ txApp.controller('TxListCtrl', function ($scope, $http) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
     var seconds = date.getSeconds();
-    return hours + ':' + minutes + ':' + seconds;
+    var zerofill2 = function (x) {
+      return ('00' + x).substr(-2)
+    };
+    return zerofill2(hours) + ':' + zerofill2(minutes) + ':' + zerofill2(seconds);
   };
 });
+
 
 txApp.controller('TxShowCtrl', function ($scope, $http) {
   $scope.show_id = window.location.hash.substring(1);
