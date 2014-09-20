@@ -58,7 +58,7 @@ to_json(Term) when is_integer(Term) ->
   ]};
 to_json(Term) when is_binary(Term) ->
   {struct, [ {t, ?binary_id}
-           , {v, erl_print(Term)}
+           , {v, erl_print_binary(Term)}
            ]};
 to_json(Term) when is_bitstring(Term) ->
   {struct, [ {t, ?bitstring_id}
@@ -92,7 +92,15 @@ to_json(Term) ->
 
 erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
 
+erl_print_binary(T) ->
+  case is_printable(binary_to_list(T)) of
+    true -> <<"<<", T/binary, ">>">>;
+    false -> erl_print(T)
+  end.
+
 is_printable([]) -> true;
 is_printable([X | _T]) when not is_integer(X) -> false;
-is_printable([X | _T]) when X < 32 orelse X > 255 -> false;
+is_printable([X | _T])
+  when X =/= 9 andalso X =/= 10 andalso X =/= 13
+    andalso (X < 32 orelse X > 255) -> false;
 is_printable([_ | T]) -> is_printable(T).

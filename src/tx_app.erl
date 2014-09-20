@@ -18,10 +18,12 @@
 start() ->
 %%   application:start(sasl),
   case application:start(tx) of
-    ok -> ok;
-    {error, {already_started, _}} -> ok
-  end,
-  start_web().
+    ok ->
+      start_web(),
+      ok;
+    {error, {already_started, _}} ->
+      ok
+  end.
 
 start(_StartType, _StartArgs) ->
   tx_store:start(),
