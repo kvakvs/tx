@@ -12,8 +12,13 @@ div.listbox {
   margin-bottom: 2px;
 }
 
-span.value {
+.value {
   border: 1px solid #eee;
+}
+div.collapsed {
+  max-height: 2em;
+  background: silver;
+  overflow: hidden;
 }
 
 span.string {
@@ -22,7 +27,7 @@ span.string {
 span.atom {
   background: #ffe;
 }
-span.binary {
+.binary {
   background: #eff;
 }
 span.pid {

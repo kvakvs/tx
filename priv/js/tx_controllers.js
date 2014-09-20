@@ -44,23 +44,33 @@ txApp.directive('term', function ($compile) {
 function html_term(term) {
   var result = '';
   if (term.t == 't') {
-    result += '<div class="tuplebox">{';
+    result += '<div class="tuplebox">' + collapse_container() + ' {';
     term.v.forEach(function (subterm) {
       result += '<div class="indent">' + html_term(subterm) + '</div>';
     });
     result += '}</div>';
   } else if (term.t == 'l') {
-    result += '<div class="listbox">[';
+    result += '<div class="listbox">' + collapse_container() + ' [';
     term.v.forEach(function(subterm) {
       result += '<div class="indent">' + html_term(subterm) + '</div>';
     });
     result += ']</div>';
   } else if (term.t == 's') {
-    result += '&ldquo;<span class="value string">' + htmlq(term.v) + '</span>&rdquo;';
+    if (term.v.length < 1024) {
+      result += '&ldquo;<span class="value string">' + htmlq(term.v) + '</span>&rdquo;';
+    } else {
+      result += '<div class="value string">' + collapse_container()
+          + htmlq(term.v) + '</div>';
+    }
   } else if (term.t == 'a') {
     result += '&lsquo;<span class="value atom">' + term.v + '</span>&rsquo;';
   } else if (term.t == 'b') {
-    result += '<span class="value binary">' + htmlq(term.v) + '</span>';
+    if (term.v.length < 1024) {
+      result += '<span class="value binary">' + htmlq(term.v) + '</span>';
+    } else {
+      result += '<div class="value binary">' + collapse_container()
+          + htmlq(term.v) + '</div>';
+    }
   } else if (term.t == 'bs') {
     result += 'bits <span class="value binary">' + htmlq(term.v) + '</span>';
   } else if (term.t == 'p') {
@@ -82,4 +92,19 @@ function html_term(term) {
 function htmlq(q) {
   return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab" />')
+}
+
+function collapse_container() {
+  return '<button class="btn btn-xs btn-default" ' +
+      'onclick="toggleCollapsed($(this), $(this).parent())">—</button>';
+}
+
+function toggleCollapsed(button, collapsible) {
+  collapsible.toggleClass('collapsed');
+//  $(this).parent().slideToggle(250);
+  if (collapsible.hasClass('collapsed')) {
+    button.html('+');
+  } else {
+    button.html('—');
+  }
 }
