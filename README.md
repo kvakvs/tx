@@ -11,10 +11,24 @@ term structure.
 
 Uses only standard Erlang libraries (inets), no external dependencies.
 
+# How to begin
+
+Add `https://github.com/kvakvs/tx` as your application dependency or download it
+and compile manually. Run your application as usual. When you need to see things,
+call `tx:show(Term).` in Erlang console or insert call to `tx:show` where you 
+need it. 
+
+NOTE: URL to see the pasted term is returned from `tx:show`, it will NOT be 
+io:format'ted.
+
 # Running
 
-run manually via: `application:start(tx).` or it will be started automatically
-if you forget to do that. Default port is 20000, and default host is localhost.
+Application `tx` will be started automatically and web server will be opened on
+your first call of `tx:show/1`.
+
+Run manually via: `tx:start().`. Default port is 20000, and default host is 
+`localhost`.
+
 
 # Example
 
