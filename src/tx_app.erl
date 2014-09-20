@@ -32,14 +32,19 @@ start_web() ->
   {ok, TxPort}   = application:get_env(tx, port),
   {ok, ConfHost} = application:get_env(tx, host),
   {ok, TxHost}   = inet_parse:address(ConfHost),
+  DocRoot = filename:absname("priv/"),
+  SrvRoot = filename:absname(""),
 
   Options    = [ {modules, [ mod_esi
                            , mod_get ]}
+               %, {debug, {all_functions, [tx_esi]}}
+%%                , {directory, {DocRoot, [ {directory_index, ["index.html"]}
+%%                                        ]}}
 
                , {port, TxPort}
                , {server_name, "127.0.0.1"}
-               , {server_root, filename:absname(".")}
-               , {document_root, filename:absname("priv/")}
+               , {server_root, SrvRoot}
+               , {document_root, DocRoot}
                , {bind_address, TxHost}
 
                , {erl_script_alias, {"/tx", [tx_esi, io]}}
@@ -51,4 +56,5 @@ start_web() ->
                , {mime_type, "application/octet-stream"}
                ],
   {ok, _Pid} = inets:start(httpd, Options),
-  io:format("[term explorer] http started on localhost (port ~p)~n", [TxPort]).
+  io:format("~n[term explorer] http server started. Add a term using tx:show(Term) or~n", []),
+  io:format("[term explorer] visit http://~s:~p/index.html~n", [ConfHost, TxPort]).

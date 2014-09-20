@@ -2,3 +2,5 @@
 ebin
 *.beam
 *.iml
+.rebar
+deps

@@ -7,11 +7,14 @@
 -module(tx_store).
 
 %% API
+-export([value/1]).
 -export([start/0, store/1, read/1, list_json/0, delete/1]).
 
 -define(ets_tab, tx_term_store).
 
 -record(txvalue, {id, created, expires, value}).
+
+value(#txvalue{value=V}) -> V.
 
 start() ->
   ets:new(?ets_tab, [named_table, public, {keypos, #txvalue.id}]).
@@ -45,5 +48,7 @@ list_keys(K, A) ->
                      ]},
   list_keys(ets:next(?ets_tab, K), [Entry | A]).
 
+delete(<<"all">>) ->
+  ets:delete_all_objects(?ets_tab);
 delete(Id) ->
   ets:delete(?ets_tab, Id).

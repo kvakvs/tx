@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Term eXplorer: Show</title>
   <link rel="stylesheet" href="bootstrap-3.2.0.css">
+  <link rel="stylesheet" href="tx_show.css">
   <script src="angular-1.3.0rc2.js"></script>
   <script src="tx_controllers.js"></script>
 </head>
@@ -11,16 +12,31 @@
 
 <div class="row" ng-controller="TxShowCtrl">
   <div class="col-lg-10 col-lg-offset-1">
-    <a href="index.html">Back to index</a>
+    <a href="index.html" class="btn btn-primary">Back to index</a>
 
     <h1>Displaying term</h1>
 
-    <ul>
-      <member member='term'></member>
-    </ul>
+    <p><a href="/tx/tx_esi:delete?{{show_id}}" class="btn btn-danger">Delete</a></p>
+
+    <p><strong>Legend:</strong>
+      <span class="value integer">integers</span>,
+      <span class="value float">floats</span>,
+      &ldquo;<span class="value string">strings</span>&rdquo;,
+      &lsquo;<span class="value atom">atoms</span>&rsquo;,
+      <span class="value binary">&lt;&lt;binaries&gt;&gt;</span>,
+      <span class="value binary">bits &lt;&lt;bit strings&gt;&gt;</span>,
+      <span class="value pid">pids</span>,
+      <span class="value ref">references</span>,
+      <span class="value port">ports</span>,
+      other unknown types (unsupported like maps) are not colored
+    </p>
+
+    <term term="term"></term>
+
+    <hr/>
+    <p>END</p>
   </div>
 </div>
-
 
 </body>
 </html>

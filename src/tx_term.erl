@@ -15,12 +15,13 @@
 -define(integer_id,   i).
 -define(atom_id,      a).
 -define(binary_id,    b).
+-define(string_id,    s).
 -define(bitstring_id, bs).
 -define(pid_id,       p).
 -define(ref_id,       r).
 -define(fun_id,       'fun').
 -define(port_id,      port).
--define(map_id,       m).
+-define(map_id,       m).     % NYI
 -define(unknown_id,   unknown).
 
 %% @doc Formats term as JSON. Each value is represented by JSON dictionary
@@ -28,9 +29,16 @@
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
 %% unrecognized_type), and value stored as string or list where appropriate in v
 to_json(Term) when is_list(Term) ->
-  {struct, [ {t, ?list_id}
-  , {v, {array, [to_json(Value) || Value <- Term]}}
-  ]};
+  case is_printable(Term) of
+    false ->
+      {struct, [ {t, ?list_id}
+               , {v, {array, [to_json(Value) || Value <- Term]}}
+      ]};
+    true ->
+      {struct, [ {t, ?string_id}
+               , {v, list_to_binary(Term)}
+      ]}
+  end;
 to_json(Term) when is_tuple(Term) ->
   {struct, [ {t, ?tuple_id}
   , {v, {array, [to_json(Value) || Value <- tuple_to_list(Term)]}}
@@ -83,3 +91,8 @@ to_json(Term) ->
   ]}.
 
 erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
+
+is_printable([]) -> true;
+is_printable([X | _T]) when not is_integer(X) -> false;
+is_printable([X | _T]) when X < 32 orelse X > 255 -> false;
+is_printable([_ | T]) -> is_printable(T).

@@ -1,0 +1,36 @@
+div.indent {
+  margin-left: 24px;
+}
+div.tuplebox {
+  border: 1px solid #dfd;
+  padding: 2px;
+  margin-bottom: 2px;
+}
+div.listbox {
+  border: 1px solid #ddf;
+  padding: 2px;
+  margin-bottom: 2px;
+}
+
+span.value {
+  border: 1px solid #eee;
+}
+
+span.string {
+  background: #efe;
+}
+span.atom {
+  background: #ffe;
+}
+span.binary {
+  background: #eff;
+}
+span.pid {
+  background: #eef;
+}
+span.float {
+  color: magenta;
+}
+span.integer {
+  color: red;
+}
