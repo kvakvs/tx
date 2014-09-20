@@ -30,7 +30,7 @@ txApp.directive('term', function ($compile) {
     scope: { term: '=' },
     template: '<div></div>',
     link: function (scope, element, attrs) {
-      scope.$watch(attrs.term, function(x) {
+      scope.$watch(attrs.term, function (x) {
         if (x) {
           element.append(html_term(x));
           $compile(element.contents())(scope);
