@@ -91,7 +91,7 @@ function html_term(term) {
 
 function htmlq(q) {
   return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab" />')
+      .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab"></span>')
 }
 
 function collapse_container() {

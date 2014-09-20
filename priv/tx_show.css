@@ -17,7 +17,7 @@ div.listbox {
 }
 div.collapsed {
   max-height: 2em;
-  background: silver;
+  background: #eee;
   overflow: hidden;
 }
 
