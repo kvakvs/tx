@@ -11,8 +11,8 @@ term structure.
 
 Uses only standard Erlang libraries (inets), no external dependencies.
 
-![index](https://raw.github.com/kvakvs/tx/master/priv/img/index.png)
-![show](https://raw.github.com/kvakvs/tx/master/priv/img/show.png)
+![index](https://raw.github.com/kvakvs/tx/master/priv/img/readme_index.png)
+![show](https://raw.github.com/kvakvs/tx/master/priv/img/readme_show.png)
 
 # How to begin
 
@@ -37,3 +37,13 @@ Run manually via: `tx:start().`. Default port is 20000, and default host is
 
     X = erlang:process_info(self()).
     tx:show(X). 
+
+# TODO
+
+Possible things to add of improve
+
+* Paste term from clipboard
+* Toggle nice vs. raw display (in case user wants to copy from page) or improve
+  display so that copying from page would produce correct syntax
+* Implement automatic expiration (cleanup loop on timer)
+* Toolbox for External Term Format: encode, decode, compress, view in hex etc.
