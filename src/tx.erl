@@ -14,6 +14,7 @@ show(Term) ->
     ok -> ok;
     {error, {already_started, _}} -> ok
   end,
+
   Id = tx_store:store(Term),
   {ok, TxHost} = application:get_env(tx, host),
   {ok, TxPort} = application:get_env(tx, port),

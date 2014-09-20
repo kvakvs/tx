@@ -17,29 +17,27 @@
 
 start() ->
 %%   application:start(sasl),
-  application:start(tx).
+  application:start(tx),
+  start_web().
 
 start(_StartType, _StartArgs) ->
-  start_web(),
   tx_store:start(),
   tx_sup:start_link().
 
 stop(_State) ->
   ok.
 
+%% @doc Call this after tx application started
 start_web() ->
   inets:start(),
   {ok, TxPort}   = application:get_env(tx, port),
   {ok, ConfHost} = application:get_env(tx, host),
   {ok, TxHost}   = inet_parse:address(ConfHost),
-  DocRoot = filename:absname("priv/"),
-  SrvRoot = filename:absname(""),
+  DocRoot = priv_dir(tx),
+  SrvRoot = filename:absname(DocRoot ++ "/../"),
 
   Options    = [ {modules, [ mod_esi
                            , mod_get ]}
-               %, {debug, {all_functions, [tx_esi]}}
-%%                , {directory, {DocRoot, [ {directory_index, ["index.html"]}
-%%                                        ]}}
 
                , {port, TxPort}
                , {server_name, "127.0.0.1"}
@@ -58,3 +56,12 @@ start_web() ->
   {ok, _Pid} = inets:start(httpd, Options),
   io:format("~n[term explorer] http server started. Add a term using tx:show(Term) or~n", []),
   io:format("[term explorer] visit http://~s:~p/index.html~n", [ConfHost, TxPort]).
+
+priv_dir(App) ->
+  case code:priv_dir(App) of
+    {error, bad_name} ->
+      {ok, Cwd} = file:get_cwd(),
+      Cwd ++ "/" ++ "priv/";
+    Priv ->
+      Priv ++ "/"
+  end.
