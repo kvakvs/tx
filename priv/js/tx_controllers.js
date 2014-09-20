@@ -24,7 +24,6 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
 });
 
 txApp.directive('term', function ($compile) {
-//  var loop = '<listof collection="term.v"></listof>';
   return {
     restrict: "E",
     replace: true,
@@ -95,16 +94,17 @@ function htmlq(q) {
 }
 
 function collapse_container() {
-  return '<button class="btn btn-xs btn-default" ' +
-      'onclick="toggleCollapsed($(this), $(this).parent())">—</button>';
+  return '<button class="btn btn-xs btn-default minus" ' +
+      'onclick="toggleCollapsed($(this), $(this).parent())"></button>';
 }
 
 function toggleCollapsed(button, collapsible) {
   collapsible.toggleClass('collapsed');
-//  $(this).parent().slideToggle(250);
   if (collapsible.hasClass('collapsed')) {
-    button.html('+');
+    button.addClass('plus');
+    button.removeClass('minus');
   } else {
-    button.html('—');
+    button.addClass('minus');
+    button.removeClass('plus');
   }
 }

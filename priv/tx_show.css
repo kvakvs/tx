@@ -46,3 +46,9 @@ span.tab {
 span.tab:after {
   content: "→";
 }
+button.minus:after {
+  content: "—";
+}
+button.plus:after {
+  content: "expand +";
+}
