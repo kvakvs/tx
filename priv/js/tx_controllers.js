@@ -43,13 +43,13 @@ txApp.directive('term', function ($compile) {
 function html_term(term) {
   var result = '';
   if (term.t == 't') {
-    result += '<div class="tuplebox">' + collapse_container() + ' {';
+    result += '<div class="tuplebox">{ ' + collapse_container();
     term.v.forEach(function (subterm) {
       result += '<div class="indent">' + html_term(subterm) + '</div>';
     });
     result += '}</div>';
   } else if (term.t == 'l') {
-    result += '<div class="listbox">' + collapse_container() + ' [';
+    result += '<div class="listbox">[ ' + collapse_container();
     term.v.forEach(function(subterm) {
       result += '<div class="indent">' + html_term(subterm) + '</div>';
     });
@@ -107,4 +107,15 @@ function toggleCollapsed(button, collapsible) {
     button.addClass('minus');
     button.removeClass('plus');
   }
+}
+
+function click_all_buttons(cls) {
+  var root = $('div#terms');
+  click_buttons_under(root, cls);
+}
+
+function click_buttons_under(root, cls) {
+  $.each($(root).find('button.' + cls), function(index, value) {
+    $(value).trigger('click');
+  });
 }

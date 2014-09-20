@@ -13,11 +13,19 @@
 
 <div class="row">
   <div class="col-lg-10 col-lg-offset-1">
-    <a href="/index.html?1" class="btn btn-primary">Back to index</a>
+    <p>
+      <a href="/index.html?1" class="btn btn-primary">Back to index</a>
+    </p>
 
     <h1>Displaying term</h1>
 
-    <p><a href="/tx/tx_esi:delete?{{show_id}}" class="btn btn-danger">Delete</a></p>
+    <p>
+      <a href="/tx/tx_esi:delete?{{show_id}}" class="btn btn-danger">Delete this</a>
+      <button class="btn btn-default"
+          onclick="click_all_buttons('plus')">(+) Expand all</button>
+      <button class="btn btn-default"
+          onclick="click_all_buttons('minus')">(—) Collapse all</button>
+    </p>
 
     <p><strong>Legend:</strong>
       <span class="value integer">integers</span>,
@@ -34,7 +42,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-lg-11 col-lg-offset-1">
+  <div class="col-lg-11 col-lg-offset-1" id="terms">
     <term term="term"></term>
 
     <hr/>

@@ -19,6 +19,10 @@ div.collapsed {
   max-height: 2em;
   background: #eee;
   overflow: hidden;
+  color: gray;
+}
+div.collapsed:before {
+  content: "collapsed ";
 }
 
 span.string {
@@ -50,5 +54,5 @@ button.minus:after {
   content: "—";
 }
 button.plus:after {
-  content: "expand +";
+  content: "+";
 }

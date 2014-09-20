@@ -42,6 +42,8 @@ Run manually via: `tx:start().`. Default port is 20000, and default host is
 
 Possible things to add of improve
 
+* Backend could recognize record definitions and supply field information to 
+  frontend
 * Paste term from clipboard
 * Toggle nice vs. raw display (in case user wants to copy from page) or improve
   display so that copying from page would produce correct syntax
