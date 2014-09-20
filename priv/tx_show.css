@@ -31,9 +31,15 @@ span.string {
 span.atom {
   background: #ffe;
 }
-.binary {
+
+.binaryblue {
   background: #eff;
 }
+.binary:before { content: "<<"; }
+.binary:after { content: ">>"; }
+.binarystr:before { content: "bits <<"; }
+.binarystr:after { content: ">>"; }
+
 span.pid {
   background: #eef;
 }

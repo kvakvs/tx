@@ -69,13 +69,15 @@ function html_term(term) {
     result += '&lsquo;<span class="value atom">' + term.v + '</span>&rsquo;';
   } else if (term.t == 'b') {
     if (term.v.length < 1024) {
-      result += '<span class="value binary">' + htmlq(term.v) + '</span>';
+      result += '<span class="binary"><span class="binaryblue value">' + htmlq(term.v) +
+          '</span></span>';
     } else {
-      result += '<div class="value binary">' + collapse_container()
+      result += '<div class="binary">' + collapse_container()
           + htmlq(term.v) + '</div>';
     }
   } else if (term.t == 'bs') {
-    result += 'bits <span class="value binary">' + htmlq(term.v) + '</span>';
+    result += '<span class="binarystr"><span class="binaryblue value">' + htmlq(term.v) +
+        '</span></span>';
   } else if (term.t == 'p') {
     result += '<span class="value pid">' + term.v + '</span>';
   } else if (term.t == 'r') {

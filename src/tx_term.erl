@@ -62,7 +62,7 @@ to_json(Term) when is_binary(Term) ->
            ]};
 to_json(Term) when is_bitstring(Term) ->
   {struct, [ {t, ?bitstring_id}
-  , {v, erl_print(Term)}
+  , {v, strip_angle_brackets(erl_print(Term))}
   ]};
 
 to_json(Term) when is_pid(Term) ->
@@ -94,9 +94,22 @@ erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
 
 erl_print_binary(T) ->
   case is_printable(binary_to_list(T)) of
-    true -> <<"<<", T/binary, ">>">>;
-    false -> erl_print(T)
+    true  -> T;
+    false -> strip_angle_brackets(erl_print(T))
+%%     false -> list_to_binary(format_binary(T, []))
   end.
+
+strip_angle_brackets(<<"<<", _/binary>> = Tail) ->
+  binary:part(Tail, 2, byte_size(Tail)-4).
+
+%% format_binary(<<>>, Accum) -> lists:reverse(Accum);
+%% format_binary(<<Byte:8, Rest/binary>>, Accum0) ->
+%%   Accum = case Accum0 of % insert comma if Accum not empty
+%%             [] -> Accum0;
+%%             _  -> [<<",">>, Accum0]
+%%           end,
+%%   Txt = integer_to_list(Byte),
+%%   format_binary(Rest, [Txt | Accum]).
 
 is_printable([]) -> true;
 is_printable([X | _T]) when not is_integer(X) -> false;
