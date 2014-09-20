@@ -11,6 +11,9 @@ term structure.
 
 Uses only standard Erlang libraries (inets), no external dependencies.
 
+![index](https://raw.github.com/kvakvs/tx/master/priv/img/index.png)
+![show](https://raw.github.com/kvakvs/tx/master/priv/img/show.png)
+
 # How to begin
 
 Add `https://github.com/kvakvs/tx` as your application dependency or download it
