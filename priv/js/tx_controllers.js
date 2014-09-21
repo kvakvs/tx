@@ -23,8 +23,12 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
   $scope.show_id = window.location.hash.substring(1);
 
   $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
-    $scope.term = data;
+    $scope.term = Array([data]);
   });
+
+  $scope.show_next_term = function(pickle) {
+    console.log(pickle);
+  }
 });
 
 txApp.directive('term', function ($compile) {
@@ -36,8 +40,12 @@ txApp.directive('term', function ($compile) {
     link: function (scope, element, attrs) {
       scope.$watch(attrs.term, function (x) {
         if (x) {
-          element.append(html_term(x));
-          $compile(element.contents())(scope);
+//          scope.$apply(function() {
+//            var content = $compile(html_term(scope.term))(scope);
+//            element.append(content);
+//          });
+          var compiled_templ = $compile(html_term(x));
+          element.append(compiled_templ(scope));
         }
       });
     }
@@ -79,15 +87,22 @@ function html_term(term) {
     result += '<span class="binarystr"><span class="binaryblue value">' + htmlq(term.v) +
         '</span></span>';
   } else if (term.t == 'p') {
-    result += '<span class="value pid">' + term.v + '</span>';
+    result += '<span class="value pid">' +
+        '<a href="" ng-click="show_next_term(\'' + term.pickle + '\')">' +
+        term.v + '</a></span>';
   } else if (term.t == 'r') {
-    result += 'ref <span class="value ref">' + term.v + '</span>';
+    result += '<span class="value ref">' + term.v + '</span>';
   } else if (term.t == 'port') {
-    result += 'port <span class="value port">' + term.v + '</span>';
+    result += '<span class="value port">' + term.v + '</span>';
   } else if (term.t == 'i') {
     result += '<span class="value integer">' + term.v + '</span>';
   } else if (term.t == 'f') {
     result += '<span class="value float">' + term.v + '</span>';
+  } else if (term.t == 'fun') {
+    result += '<span class="fun">' +
+        '<span class="value">' + term.m + '</span>:' +
+        '<span class="value">' + term.n + '</span>/' +
+        '<span class="value">' + term.a + '</span></span>';
   } else {
     result += '<div class="value">' + term.v + '</div>';
   }

@@ -50,6 +50,9 @@ span.ref {
 span.port {
   background: #eef;
 }
+span.fun:before {
+  content: 'fun ';
+}
 span.fun span.value {
   background: #eef;
 }

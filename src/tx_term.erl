@@ -84,7 +84,6 @@ to_json(Term) when is_function(Term) ->
 to_json(Term) when is_port(Term) ->
   {struct, [ {t, ?port_id}
   , {v, erl_print(Term)}
-  , {info, to_json(erlang:port_info(Term))}
   , {pickle, base64:encode(term_to_binary(Term))}
   ]};
 

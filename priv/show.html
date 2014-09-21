@@ -5,10 +5,10 @@
   <title>Term eXplorer: Show</title>
   <link rel="stylesheet" href="css/bootstrap-3.2.0.css">
   <link rel="stylesheet" href="css/tx_show.css">
-  <link rel="stylesheet" href="css/jquery-ui.css">
+  <!--<link rel="stylesheet" href="css/jquery-ui.css">-->
   <script src="js/angular-1.2.0.min.js"></script>
   <script src="js/jquery-2.1.1.min.js"></script>
-  <script src="js/jquery-ui.min.js"></script>
+  <!--<script src="js/jquery-ui.min.js"></script>-->
   <script src="js/tx_controllers.js"></script>
 </head>
 <body ng-controller="TxShowCtrl"><div class="container-fluid">
@@ -44,12 +44,18 @@
     other unknown types (unsupported like maps) are not colored
   </div>
 </div>
-<div class="row">
-  <div class="col-lg-12" id="terms">
-    <term term="term"></term>
 
-    <hr/>
-    <p>END</p>
+  <div class="row">
+  <div class="col-lg-12" id="terms">
+    <term term="term[0]"></term>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="panel panel-default" style="margin-top: 32px;">
+      <div class="panel-body">END</div>
+    </div>
   </div>
 </div>
 
