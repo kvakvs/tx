@@ -8,12 +8,14 @@ Given an arbitrary term, saves it temporarily and creates an unique
 URL to it (similar to Pastebin but with faster/manual expiration). Clicking the
 URL in your console window will open web browser and load a page with tree-like 
 term structure. Process and ports are "inspectable", just click one to see
-`process_info` or `port_info` in new browser tab.
+`process_info` or `port_info` in new browser tab. Proplists with printable
+keys are detected and formatted more compact.
 
 Uses only standard Erlang libraries (inets), no external dependencies.
 
 ![index](https://raw.github.com/kvakvs/tx/master/priv/img/readme_index.png)
 ![show](https://raw.github.com/kvakvs/tx/master/priv/img/readme_show.png)
+![inspect](https://raw.github.com/kvakvs/tx/master/priv/img/readme_inspect_proplist.png)
 
 # How to begin
 

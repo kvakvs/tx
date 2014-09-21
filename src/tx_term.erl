@@ -26,7 +26,7 @@
 -define(unknown_id,   unknown).
 
 make_proplist_item({K, V}) ->
-  {struct, [ {k, tx_util:as_binary(K)}
+  {struct, [ {k, to_json(K)}
            , {v, to_json(V)}
   ]}.
 
