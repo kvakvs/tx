@@ -33,18 +33,8 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
     $scope.inspect_mode = true;
   }
   $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function (data) {
-    $scope.term_stack = [data];
-    $scope.get_term = function () {
-      return $scope.term_stack[0];
-    }
+    $scope.term_to_show = data;
   });
-
-  // Open new tab displaying base64 encoded pickled term with representation=repr
-//  $scope.showNextTerm = function($event, repr, pickle) {
-//    $event.preventDefault();
-//    window.open('show.html?inspect=' + pickle + '&repr=' +
-//        encodeURIComponent(repr), '_blank');
-//  };
 
   $scope.clickAllButtons = function(cls) {
     var root = $('div#terms');
@@ -85,7 +75,8 @@ txApp.directive('termShow', function($compile){
 
   var inspectTermBtn = function(pickle, value) {
     var qvalue = encodeURIComponent(value);
-    return '<a href="show.html?inspect=' + pickle + '&repr=' +
+    var qpickle = encodeURIComponent(pickle);
+    return '<a href="show.html?inspect=' + qpickle + '&repr=' +
         qvalue + '" target="_blank">' + htmlq(value) + '</a>';
   };
 
