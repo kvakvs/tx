@@ -21,11 +21,9 @@ txApp.controller('TxListCtrl', function ($scope, $http) {
 
 txApp.controller('TxShowCtrl', function ($scope, $http) {
   $scope.show_id = window.location.hash.substring(1);
-
   $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
     $scope.term = Array([data]);
   });
-
   $scope.show_next_term = function(pickle) {
     console.log(pickle);
   }
@@ -68,7 +66,8 @@ function html_term(term) {
     result += ']</div>';
   } else if (term.t == 's') {
     if (term.v.length < 1024) {
-      result += '&ldquo;<span class="value string">' + htmlq(term.v) + '</span>&rdquo;';
+      result += '&ldquo;<span class="value string">' + htmlq(term.v) +
+          '</span>&rdquo;';
     } else {
       result += '<div class="value string">' + collapse_container()
           + htmlq(term.v) + '</div>';
@@ -88,8 +87,10 @@ function html_term(term) {
         '</span></span>';
   } else if (term.t == 'p') {
     result += '<span class="value pid">' +
-        '<a href="" ng-click="show_next_term(\'' + term.pickle + '\')">' +
-        term.v + '</a></span>';
+        //'<button ng-click="show_next_term(\'' + term.pickle + '\')">' +
+        term.v +
+        //'</button>' +
+        '</span>';
   } else if (term.t == 'r') {
     result += '<span class="value ref">' + term.v + '</span>';
   } else if (term.t == 'port') {
