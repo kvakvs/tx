@@ -11,9 +11,9 @@ txApp.controller('TxListCtrl', function ($scope, $http) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
     var seconds = date.getSeconds();
-    var zerofill2 = function (x) {
-      return ('00' + x).substr(-2)
-    };
+
+    var zerofill2 = function(x) { return ('00' + x).substr(-2) };
+
     return zerofill2(hours) + ':' + zerofill2(minutes) + ':' + zerofill2(seconds);
   };
 });
@@ -27,21 +27,30 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
       return $scope.term_stack[0];
     }
   });
-  $scope.show_next_term = function(pickle) {
-    console.log(pickle);
+
+  // load another term and push it to term_stack, and refresh display
+  $scope.showNextTerm = function($event, pickle) {
+//    console.log(pickle);
+    $event.preventDefault();
+//    $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
+//      $('div#terms').html('');
+//      $scope.term_stack.push(data);
+//    });
+  };
+
+  $scope.clickAllButtons = function(cls) {
+    var root = $('div#terms');
+    $scope.clickButtonsUnder(root, cls);
+  };
+
+  $scope.clickButtonsUnder = function(root, cls) {
+    $.each($(root).find('button.' + cls), function(index, value) {
+      $(value).trigger('click');
+    });
   }
 });
 
-function htmlq(q) {
-  return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab"></span>')
-}
-
-function collapse_container() {
-  return '<button class="btn btn-xs btn-default minus" ' +
-      'onclick="toggleCollapsed($(this), $(this).parent())"></button>';
-}
-
+// called from DOM +/- buttons
 function toggleCollapsed(button, collapsible) {
   collapsible.toggleClass('collapsed');
   if (collapsible.hasClass('collapsed')) {
@@ -53,22 +62,77 @@ function toggleCollapsed(button, collapsible) {
   }
 }
 
-function click_all_buttons(cls) {
-  var root = $('div#terms');
-  click_buttons_under(root, cls);
-}
-
-function click_buttons_under(root, cls) {
-  $.each($(root).find('button.' + cls), function(index, value) {
-    $(value).trigger('click');
-  });
-}
-
 txApp.directive('termShow', function($compile){
+  var htmlq = function(q) {
+    return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab"></span>')
+  };
+
+  var collapse_container = function() {
+    return '<button class="btn btn-xs btn-default minus" ' +
+        'onclick="toggleCollapsed($(this), $(this).parent())"></button>';
+  };
+
+  var term_template = function (term) {
+    if (term.t == 'l') {
+      return '<div class="listbox">[ ' + collapse_container() +
+          '<div term-collection nested-data="termData.v"></div>]</div>';
+    } else if (term.t == 't') {
+      return '<div class="tuplebox">{ ' + collapse_container() +
+          '<div term-collection nested-data="termData.v"></div>}</div>';
+    } else if (term.t == 's') {
+      if (term.v.length < 1024) { // short strings
+        return '&ldquo;<span class="value string">' + htmlq(term.v) +
+            '</span>&rdquo;';
+      } else { // long strings with collapse button
+        return '<div class="value string">' + collapse_container() +
+            htmlq(term.v) + '</div>';
+      }
+    } else if (term.t == 'a') {
+      return '&lsquo;<span class="value atom">' + htmlq(term.v) +
+          '</span>&rsquo;';
+    } else if (term.t == 'b') {
+      if (term.v.length < 1024) {
+        return '<span class="binary"><span class="binaryblue value">' +
+            htmlq(term.v) +
+            '</span></span>';
+      } else {
+        return '<div class="binary">' + collapse_container() + htmlq(term.v) +
+            '</div>';
+      }
+    } else if (term.t == 'bs') {
+      return '<span class="binarystr"><span class="binaryblue value">' +
+          htmlq(term.v) + '</span></span>';
+    } else if (term.t == 'p') {
+      return '<span class="value pid">' +
+        '<a href="" ng-click="showNextTerm($event, \'' + term.pickle + '\')">' +
+        htmlq(term.v) + '</a></span>';
+    } else if (term.t == 'r') {
+      return '<span class="value ref">' + term.v + '</span>';
+    } else if (term.t == 'port') {
+      return '<span class="value port">' +
+        '<a href="" ng-click="showNextTerm($event, \'' + term.pickle + '\')">' +
+        htmlq(term.v) + '</a></span>';
+    } else if (term.t == 'i') {
+      return '<span class="value integer">' + term.v + '</span>';
+    } else if (term.t == 'f') {
+      return '<span class="value float">' + term.v + '</span>';
+    } else if (term.t == 'fun') {
+      return '<span class="fun">' +
+          '<span class="value">' + term.m + '</span>:' +
+          '<span class="value">' + term.n + '</span>/' +
+          '<span class="value">' + term.a + '</span></span>';
+    }
+    return '<div>{{termData}}</div>';
+  };
+
   return {
     restrict: 'A',
-    scope: { termData: '=' },
+    scope: {
+      termData: '='
+    },
     link: function(scope, element, attrs){
+      scope.showNextTerm = scope.$parent.showNextTerm;
       scope.$watch(function() { return scope.termData; }, function() {
         if (scope.termData) {
           element.append(term_template(scope.termData));
@@ -79,59 +143,6 @@ txApp.directive('termShow', function($compile){
   }
 });
 
-function term_template(term) {
-  if (term.t == 'l') {
-    return '<div class="listbox">[ ' + collapse_container() +
-        '<div term-collection nested-data="termData.v"></div>]</div>';
-  } else if (term.t == 't') {
-    return '<div class="tuplebox">{ ' + collapse_container() +
-        '<div term-collection nested-data="termData.v"></div>}</div>';
-  } else if (term.t == 's') {
-    if (term.v.length < 1024) { // short strings
-      return '&ldquo;<span class="value string">' + htmlq(term.v) +
-          '</span>&rdquo;';
-    } else { // long strings with collapse button
-      return '<div class="value string">' + collapse_container() +
-          htmlq(term.v) + '</div>';
-    }
-  } else if (term.t == 'a') {
-    return '&lsquo;<span class="value atom">' + htmlq(term.v) +
-        '</span>&rsquo;';
-  } else if (term.t == 'b') {
-    if (term.v.length < 1024) {
-      return '<span class="binary"><span class="binaryblue value">' +
-          htmlq(term.v) +
-          '</span></span>';
-    } else {
-      return '<div class="binary">' + collapse_container() + htmlq(term.v) +
-          '</div>';
-    }
-  } else if (term.t == 'bs') {
-    return '<span class="binarystr"><span class="binaryblue value">' +
-        htmlq(term.v) + '</span></span>';
-  } else if (term.t == 'p') {
-    return '<span class="value pid">' +
-      //'<button ng-click="show_next_term(\'' + term.pickle + '\')">' +
-      term.v +
-      //'</button>' +
-      '</span>';
-  } else if (term.t == 'r') {
-    return '<span class="value ref">' + term.v + '</span>';
-  } else if (term.t == 'port') {
-    return '<span class="value port">' + term.v + '</span>';
-  } else if (term.t == 'i') {
-    return '<span class="value integer">' + term.v + '</span>';
-  } else if (term.t == 'f') {
-    return '<span class="value float">' + term.v + '</span>';
-  } else if (term.t == 'fun') {
-    return '<span class="fun">' +
-        '<span class="value">' + term.m + '</span>:' +
-        '<span class="value">' + term.n + '</span>/' +
-        '<span class="value">' + term.a + '</span></span>';
-  }
-  return '<div>{{termData}}</div>';
-}
-
 txApp.directive('termCollection', function(){
   return {
     restrict: 'A',
@@ -140,6 +151,9 @@ txApp.directive('termCollection', function(){
       nestedData: '='
     },
     template: '<div class="indent" ng-repeat="subterm in nestedData">' +
-        '<div term-show  term-data="subterm"></div></div>'
+        '<div term-show  term-data="subterm"></div></div>',
+    link: function(scope, element, attrs) {
+      scope.showNextTerm = scope.$parent.showNextTerm;
+    }
   };
 });
