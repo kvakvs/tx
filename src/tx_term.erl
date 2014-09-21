@@ -10,6 +10,7 @@
 -export([to_json/1, inspect_as_json/1]).
 
 -define(list_id,      l).
+-define(proplist_id,  'prop').
 -define(tuple_id,     t).
 -define(float_id,     f).
 -define(integer_id,   i).
@@ -24,6 +25,11 @@
 -define(map_id,       m).     % NYI
 -define(unknown_id,   unknown).
 
+make_proplist_item({K, V}) ->
+  {struct, [ {k, tx_util:as_binary(K)}
+           , {v, to_json(V)}
+  ]}.
+
 %% @doc Formats term as JSON. Each value is represented by JSON dictionary
 %% (hash) with type stored in 't' (values: l=list, t=tuple, f=float,
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
@@ -31,9 +37,16 @@
 to_json(Term) when is_list(Term) ->
   case is_printable(Term) of
     false ->
-      {struct, [ {t, ?list_id}
-               , {v, {array, [to_json(Value) || Value <- Term]}}
-      ]};
+      case is_proplist(Term) of
+        true ->
+          {struct, [ {t, ?proplist_id}
+                   , {v, lists:map(fun make_proplist_item/1, Term)}
+          ]};
+        false ->
+          {struct, [ {t, ?list_id}
+                   , {v, {array, [to_json(Value) || Value <- Term]}}
+          ]}
+      end;
     true ->
       {struct, [ {t, ?string_id}
                , {v, list_to_binary(Term)}
@@ -124,3 +137,17 @@ inspect_as_json(Pid) when is_pid(Pid) ->
   to_json(erlang:process_info(Pid));
 inspect_as_json(Port) when is_port(Port) ->
   to_json(erlang:port_info(Port)).
+
+%% @private
+is_proplist([]) ->
+  true;
+is_proplist([{K, _} | Tail]) when is_atom(K) ->
+  is_proplist(Tail);
+is_proplist([{K, _} | Tail])
+  when (is_binary(K) andalso byte_size(K) < 128)
+  orelse (is_list(K) andalso length(K) < 128) ->
+  case is_printable(atom_to_list(K)) of
+    true -> is_proplist(Tail);
+    false -> false
+  end;
+is_proplist(_) -> false.

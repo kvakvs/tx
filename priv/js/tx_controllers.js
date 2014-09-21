@@ -87,6 +87,9 @@ txApp.directive('termShow', function($compile){
     } else if (term.t == 't') {
       return '<div class="tuplebox">{ ' + collapse_container() +
           '<div term-collection nested-data="termData.v"></div>}</div>';
+    } else if (term.t == 'prop') {
+      return '<div class="listbox">[ ' + collapse_container() +
+          '<div term-proplist nested-data="termData.v"></div>]</div>';
     } else if (term.t == 's') {
       if (term.v.length < 1024) { // short strings
         return '&ldquo;<span class="value string">' + htmlq(term.v) +
@@ -157,6 +160,24 @@ txApp.directive('termCollection', function(){
     },
     template: '<div class="indent" ng-repeat="subterm in nestedData">' +
         '<div term-show  term-data="subterm"></div></div>',
+    link: function(scope, element, attrs) {
+      scope.showNextTerm = scope.$parent.showNextTerm;
+    }
+  };
+});
+
+txApp.directive('termProplist', function(){
+  return {
+    restrict: 'A',
+    replace: true,
+    scope: {
+      nestedData: '='
+    },
+    template: '<div class="indent" ng-repeat="proplistitem in nestedData">' +
+        '<div class="row proplist">' +
+        '<div class="col-lg-2 propkey"><div term-show term-data="proplistitem.k"></div></div>' +
+        '<div class="col-lg-10"><div term-show term-data="proplistitem.v"></div></div>' +
+        '</div></div>',
     link: function(scope, element, attrs) {
       scope.showNextTerm = scope.$parent.showNextTerm;
     }

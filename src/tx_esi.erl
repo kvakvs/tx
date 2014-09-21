@@ -23,7 +23,6 @@ do_show(Sid, Env, _In) ->
                               "inspect=base64pickle"}];
         PickleStr ->
           Pickle = list_to_binary(PickleStr),
-          io:format("~p~n", [Pickle]),
           Subject = binary_to_term(base64:decode(Pickle), [safe]),
           tx_term:inspect_as_json(Subject)
       end;

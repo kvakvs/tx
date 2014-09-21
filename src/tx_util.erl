@@ -7,7 +7,7 @@
 -module(tx_util).
 
 %% API
--export([unquote/1]).
+-export([unquote/1, as_string/1, as_binary/1]).
 
 %% @private
 %% @doc Unquote a URL encoded string.
@@ -50,3 +50,14 @@ qs_revdecode([C | Rest], Acc) ->
 unhexdigit(C) when C >= $0, C =< $9 -> C - $0;
 unhexdigit(C) when C >= $a, C =< $f -> C - $a + 10;
 unhexdigit(C) when C >= $A, C =< $F -> C - $A + 10.
+
+
+as_string(X) when is_list(X) -> X;
+as_string(X) when is_binary(X) -> binary_to_list(X);
+as_string(X) when is_integer(X) -> integer_to_list(X);
+as_string(X) when is_atom(X) -> atom_to_list(X).
+
+as_binary(X) when is_binary(X) -> X;
+as_binary(X) when is_list(X) -> list_to_binary(X);
+as_binary(X) when is_integer(X) -> as_binary(integer_to_list(X));
+as_binary(X) when is_atom(X) -> atom_to_binary(X, latin1).
