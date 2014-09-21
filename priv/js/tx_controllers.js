@@ -20,23 +20,31 @@ txApp.controller('TxListCtrl', function ($scope, $http) {
 
 
 txApp.controller('TxShowCtrl', function ($scope, $http) {
-  $scope.show_id = window.location.hash.substring(1);
-  $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
+  var stored_id = getQueryParam('stored', false);
+  if (stored_id) {
+    $scope.show_id = 'stored=' + stored_id;
+    $scope.show_id_title = '(stored) ' + stored_id;
+    $scope.inspect_mode = false;
+  } else {
+    var inspect_id = getQueryParam('inspect', undefined);
+    $scope.show_id = 'inspect=' + inspect_id;
+    $scope.show_id_title = '(inspecting live) ' +
+        decodeURIComponent(getQueryParam('repr', inspect_id));
+    $scope.inspect_mode = true;
+  }
+  $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function (data) {
     $scope.term_stack = [data];
-    $scope.get_term = function() {
+    $scope.get_term = function () {
       return $scope.term_stack[0];
     }
   });
 
-  // load another term and push it to term_stack, and refresh display
-  $scope.showNextTerm = function($event, pickle) {
-//    console.log(pickle);
-    $event.preventDefault();
-//    $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function(data) {
-//      $('div#terms').html('');
-//      $scope.term_stack.push(data);
-//    });
-  };
+  // Open new tab displaying base64 encoded pickled term with representation=repr
+//  $scope.showNextTerm = function($event, repr, pickle) {
+//    $event.preventDefault();
+//    window.open('show.html?inspect=' + pickle + '&repr=' +
+//        encodeURIComponent(repr), '_blank');
+//  };
 
   $scope.clickAllButtons = function(cls) {
     var root = $('div#terms');
@@ -48,6 +56,8 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
       $(value).trigger('click');
     });
   }
+}).config(function($locationProvider) {
+  $locationProvider.html5Mode(true).hashPrefix('!');
 });
 
 // called from DOM +/- buttons
@@ -71,6 +81,12 @@ txApp.directive('termShow', function($compile){
   var collapse_container = function() {
     return '<button class="btn btn-xs btn-default minus" ' +
         'onclick="toggleCollapsed($(this), $(this).parent())"></button>';
+  };
+
+  var inspectTermBtn = function(pickle, value) {
+    var qvalue = encodeURIComponent(value);
+    return '<a href="show.html?inspect=' + pickle + '&repr=' +
+        qvalue + '" target="_blank">' + htmlq(value) + '</a>';
   };
 
   var term_template = function (term) {
@@ -104,15 +120,13 @@ txApp.directive('termShow', function($compile){
       return '<span class="binarystr"><span class="binaryblue value">' +
           htmlq(term.v) + '</span></span>';
     } else if (term.t == 'p') {
-      return '<span class="value pid">' +
-        '<a href="" ng-click="showNextTerm($event, \'' + term.pickle + '\')">' +
-        htmlq(term.v) + '</a></span>';
+      return '<span class="value pid">' + inspectTermBtn(term.pickle, term.v) +
+        '</span>';
     } else if (term.t == 'r') {
       return '<span class="value ref">' + term.v + '</span>';
     } else if (term.t == 'port') {
-      return '<span class="value port">' +
-        '<a href="" ng-click="showNextTerm($event, \'' + term.pickle + '\')">' +
-        htmlq(term.v) + '</a></span>';
+      return '<span class="value port">' + inspectTermBtn(term.pickle, term.v) +
+        '</span>';
     } else if (term.t == 'i') {
       return '<span class="value integer">' + term.v + '</span>';
     } else if (term.t == 'f') {
@@ -157,3 +171,15 @@ txApp.directive('termCollection', function(){
     }
   };
 });
+
+function getQueryParam(name, dflt) {
+  var url = window.location.search.substring(1);
+  var query = url.split('&');
+  for(var i = 0; i < query.length; i++) {
+    var key_val = query[i].split('=');
+    if (key_val[0] == name) {
+      return key_val[1];
+    }
+  }
+  return dflt;
+}

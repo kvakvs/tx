@@ -33,7 +33,7 @@
       </tr>
       <tr ng-repeat="term in term_list">
         <td>
-          <a href="show.html#{{term.id}}">Show term #{{term.id}}</a>
+          <a href="show.html?stored={{term.id}}">Show term #{{term.id}}</a>
         </td>
         <td>
           {{unix_ts_to_date(term.created)}}

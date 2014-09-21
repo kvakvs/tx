@@ -7,7 +7,7 @@
 -module(tx_term).
 
 %% API
--export([to_json/1]).
+-export([to_json/1, inspect_as_json/1]).
 
 -define(list_id,      l).
 -define(tuple_id,     t).
@@ -119,3 +119,8 @@ is_printable([X | _T])
   when X =/= 9 andalso X =/= 10 andalso X =/= 13
     andalso (X < 32 orelse X > 255) -> false;
 is_printable([_ | T]) -> is_printable(T).
+
+inspect_as_json(Pid) when is_pid(Pid) ->
+  to_json(erlang:process_info(Pid));
+inspect_as_json(Port) when is_port(Port) ->
+  to_json(erlang:port_info(Port)).

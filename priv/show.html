@@ -14,20 +14,21 @@
 <body ng-controller="TxShowCtrl as ctrl">
 <div class="container-fluid">
 
-<div id="dialog" title="Info" style="display: none">
-</div>
-
 <div class="row">
   <div class="col-lg-7">
     <p>
-      <a href="/index.html?1" class="btn btn-primary">← Back to index</a>
-      <a href="/tx/tx_esi:delete?{{show_id}}" class="btn btn-danger">Delete this</a>
+      <a ng-if="!inspect_mode" href="/index.html?1"
+         class="btn btn-primary">← Back to index</a>
+      <a ng-if="inspect_mode" href="" class="btn btn-primary"
+         onclick="window.close();">Close this tab</a>
+      <a ng-if="!inspect_mode" href="/tx/tx_esi:delete?{{show_id}}"
+         class="btn btn-danger">Delete this</a>
       <button class="btn btn-default"
               ng-click="clickAllButtons('plus')">(+) Expand all</button>
       <button class="btn btn-default"
               ng-click="clickAllButtons('minus')">(—) Collapse all</button>
     </p>
-    <h3>Term {{show_id}}</h3>
+    <h3>Term {{show_id_title}}</h3>
   </div>
   <div class="col-lg-5">
     <strong>Legend:</strong>
@@ -45,6 +46,15 @@
     other unknown types (unsupported like maps) are not colored
   </div>
 </div>
+
+<div class="row">
+  <div class="col-lg-10 col-lg-offset-1">
+    <div class="alert alert-warning" role="alert" ng-if="inspect_mode">
+      You are inspecting a live value. Close this tab when you are done.
+    </div>
+  </div>
+</div>
+
 
 <div class="row">
   <div class="col-lg-12">
