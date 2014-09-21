@@ -3,13 +3,18 @@
 <head>
   <meta charset="utf-8">
   <title>Term eXplorer: Show</title>
-  <link rel="stylesheet" href="bootstrap-3.2.0.css">
-  <link rel="stylesheet" href="tx_show.css">
+  <link rel="stylesheet" href="css/bootstrap-3.2.0.css">
+  <link rel="stylesheet" href="css/tx_show.css">
+  <link rel="stylesheet" href="css/jquery-ui.css">
   <script src="js/angular-1.2.0.min.js"></script>
   <script src="js/jquery-2.1.1.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
   <script src="js/tx_controllers.js"></script>
 </head>
 <body ng-controller="TxShowCtrl"><div class="container-fluid">
+
+<div id="dialog" title="Info" style="display: none">
+</div>
 
 <div class="row">
   <div class="col-lg-7">
@@ -25,16 +30,17 @@
   </div>
   <div class="col-lg-5">
     <strong>Legend:</strong>
-    <span class="value integer">integers</span>,
-    <span class="value float">floats</span>,
+    <span class="integer">integers</span>,
+    <span class="float">floats</span>,
     &ldquo;<span class="value string">strings</span>&rdquo;,
     &lsquo;<span class="value atom">atoms</span>&rsquo;,
     <span class="binary"><span class="binaryblue value">binaries</span></span>,
     <span class="binarystr"><span class="binaryblue value">bit strings</span></span>
       (prefixed with 'bits'),
-    <span class="value pid">pids</span>,
-    <span class="value ref">references</span>,
-    <span class="value port">ports</span>,
+    pids <span class="value pid">&lt;0.1.0&gt;</span>,
+    <span class="value ref">#Refs&lt;0.0.0.0&gt;</span>,
+    <span class="value port">#Ports&lt;0.0&gt;</span>,
+    <span class="fun"><span class="value">funs m:f/a</span></span>,
     other unknown types (unsupported like maps) are not colored
   </div>
 </div>

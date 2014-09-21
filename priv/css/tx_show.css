@@ -1,3 +1,7 @@
+div#terms {
+  font-family: monospace;
+}
+
 div.indent {
   margin-left: 24px;
 }
@@ -21,9 +25,6 @@ div.collapsed {
   overflow: hidden;
   color: gray;
 }
-div.collapsed:before {
-  content: "collapsed ";
-}
 
 span.string {
   background: #efe;
@@ -43,6 +44,15 @@ span.atom {
 span.pid {
   background: #eef;
 }
+span.ref {
+  background: #eef;
+}
+span.port {
+  background: #eef;
+}
+span.fun span.value {
+  background: #eef;
+}
 span.float {
   color: magenta;
 }
@@ -60,5 +70,5 @@ button.minus:after {
   content: "—";
 }
 button.plus:after {
-  content: "+";
+  content: "expand +";
 }
