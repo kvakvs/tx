@@ -1,24 +1,5 @@
 var txApp = angular.module('txApp', []);
 
-txApp.controller('TxListCtrl', function ($scope, $http) {
-  $http.get('/tx/tx_esi:list').success(function(data) {
-    data.entries.sort(function(a,b) {return (a.created > b.created) ? -1 : ((b.created > a.created) ? 1 : 0);} );
-    $scope.term_list = data.entries;
-  });
-
-  $scope.unix_ts_to_date = function(u) {
-    var date = new Date(u*1000);
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var seconds = date.getSeconds();
-
-    var zerofill2 = function(x) { return ('00' + x).substr(-2) };
-
-    return zerofill2(hours) + ':' + zerofill2(minutes) + ':' + zerofill2(seconds);
-  };
-});
-
-
 txApp.controller('TxShowCtrl', function ($scope, $http) {
   var stored_id = getQueryParam('stored', false);
   if (stored_id) {
@@ -32,8 +13,10 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
         decodeURIComponent(getQueryParam('repr', inspect_id));
     $scope.inspect_mode = true;
   }
+  // query server, it will give us parsed tree and raw string data
   $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function (data) {
-    $scope.term_to_show = data;
+    $scope.term_to_show = data.parsed;
+    $scope.raw_term     = data.raw;
   });
 
   $scope.clickAllButtons = function(cls) {
@@ -62,12 +45,13 @@ function toggleCollapsed(button, collapsible) {
   }
 }
 
-txApp.directive('termShow', function($compile){
-  var htmlq = function(q) {
-    return q.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab"></span>')
-  };
+function html_quote(text) {
+  if (!text) return "";
+  return text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br/>\n').replace(/\t/g, '<span class="tab"></span>')
+}
 
+txApp.directive('termShow', function($compile){
   var collapse_container = function() {
     return '<button class="btn btn-xs btn-default minus" ' +
         'onclick="toggleCollapsed($(this), $(this).parent())"></button>';
@@ -77,7 +61,7 @@ txApp.directive('termShow', function($compile){
     var qvalue = encodeURIComponent(value);
     var qpickle = encodeURIComponent(pickle);
     return '<a href="show.html?inspect=' + qpickle + '&repr=' +
-        qvalue + '" target="_blank">' + htmlq(value) + '</a>';
+        qvalue + '" target="_blank">' + html_quote(value) + '</a>';
   };
 
   var term_template = function (term) {
@@ -92,27 +76,27 @@ txApp.directive('termShow', function($compile){
           '<div term-proplist nested-data="termData.v"></div>]</div>';
     } else if (term.t == 's') {
       if (term.v.length < 1024) { // short strings
-        return '&ldquo;<span class="value string">' + htmlq(term.v) +
+        return '&ldquo;<span class="value string">' + html_quote(term.v) +
             '</span>&rdquo;';
       } else { // long strings with collapse button
         return '<div class="value string">' + collapse_container() +
-            htmlq(term.v) + '</div>';
+            html_quote(term.v) + '</div>';
       }
     } else if (term.t == 'a') {
-      return '&lsquo;<span class="value atom">' + htmlq(term.v) +
+      return '&lsquo;<span class="value atom">' + html_quote(term.v) +
           '</span>&rsquo;';
     } else if (term.t == 'b') {
       if (term.v.length < 1024) {
         return '<span class="binary"><span class="binaryblue value">' +
-            htmlq(term.v) +
+            html_quote(term.v) +
             '</span></span>';
       } else {
-        return '<div class="binary">' + collapse_container() + htmlq(term.v) +
+        return '<div class="binary">' + collapse_container() + html_quote(term.v) +
             '</div>';
       }
     } else if (term.t == 'bs') {
       return '<span class="binarystr"><span class="binaryblue value">' +
-          htmlq(term.v) + '</span></span>';
+          html_quote(term.v) + '</span></span>';
     } else if (term.t == 'p') {
       return '<span class="value pid">' + inspectTermBtn(term.pickle, term.v) +
         '</span>';

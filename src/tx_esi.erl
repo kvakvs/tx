@@ -16,21 +16,25 @@ show(Sid, Env, In) -> try_do(fun do_show/3, Sid, Env, In).
 do_show(Sid, Env, _In) ->
   QueryString = proplists:get_value(query_string, Env, ""),
   Query       = parse_query_string(QueryString),
-  Json = case proplists:get_value("stored", Query) of
+  {Json, RawValue} = case proplists:get_value("stored", Query) of
     undefined ->
       case proplists:get_value("inspect", Query) of
         undefined -> [{error, "query must contain either stored=ID or "
                               "inspect=base64pickle"}];
         PickleStr ->
-          Pickle = list_to_binary(PickleStr),
+          Pickle  = list_to_binary(PickleStr),
           Subject = binary_to_term(base64:decode(Pickle), [safe]),
-          tx_term:inspect_as_json(Subject)
+          Result  = tx_term:inspect(Subject),
+          {tx_term:to_json(Result), Result}
       end;
     Id ->
-      StoredValue = tx_store:read(list_to_binary(Id)),
-      tx_term:to_json(tx_store:value(StoredValue))
+      StoredValue = tx_store:value(tx_store:read(list_to_binary(Id))),
+      {tx_term:to_json(StoredValue), StoredValue}
   end,
-  Resp = tx_mochijson2:encode(Json),
+  RawString = iolist_to_binary(io_lib:format("~120p.", [RawValue])),
+  Resp = tx_mochijson2:encode({struct, [ {parsed, Json}
+                                       , {raw, RawString}
+                                       ]}),
   mod_esi:deliver(Sid, Resp).
 
 delete(Sid, Env, In) -> try_do(fun do_delete/3, Sid, Env, In).

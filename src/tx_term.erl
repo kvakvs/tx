@@ -7,7 +7,7 @@
 -module(tx_term).
 
 %% API
--export([to_json/1, inspect_as_json/1]).
+-export([to_json/1, inspect/1]).
 
 -define(list_id,      l).
 -define(proplist_id,  'prop').
@@ -133,10 +133,10 @@ is_printable([X | _T])
     andalso (X < 32 orelse X > 255) -> false;
 is_printable([_ | T]) -> is_printable(T).
 
-inspect_as_json(Pid) when is_pid(Pid) ->
-  to_json(erlang:process_info(Pid));
-inspect_as_json(Port) when is_port(Port) ->
-  to_json(erlang:port_info(Port)).
+inspect(Pid) when is_pid(Pid) ->
+  erlang:process_info(Pid);
+inspect(Port) when is_port(Port) ->
+  erlang:port_info(Port).
 
 %% @private
 is_proplist([]) ->
