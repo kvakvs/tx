@@ -14,6 +14,6 @@ show(Term) ->
   Id = tx_store:store(Term),
   {ok, TxHost} = application:get_env(tx, host),
   {ok, TxPort} = application:get_env(tx, port),
-  Url = lists:flatten(io_lib:format("http://~s:~p/tx/tx_esi:show?~s"
+  Url = lists:flatten(io_lib:format("http://~s:~p/tx/tx_esi:show?stored=~s"
                                    , [TxHost, TxPort, Id])),
   Url.
