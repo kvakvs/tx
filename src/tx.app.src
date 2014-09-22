@@ -9,6 +9,8 @@
                    ]},
     {mod, {tx_app, []}},
     {env, [ {host, "127.0.0.1"}
+          %% set this to 0 for automatic port assignment. Read assigned port from
+          %% application:get_env(tx, port) after tx started
           , {port, 20000}
           ]}
   ]}.
