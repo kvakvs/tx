@@ -71,8 +71,11 @@ txApp.directive('termShow', function($compile){
       return '<div class="tuplebox">{ ' + collapse_container() +
           '<div term-collection nested-data="termData.v"></div>}</div>';
     } else if (term.t == 'prop') {
-      return '<div class="listbox">[ ' + collapse_container() +
+      return '<div class="listbox">proplist [ ' + collapse_container() +
           '<div term-proplist nested-data="termData.v"></div>]</div>';
+    } else if (term.t == 'm') {
+      return '<div class="listbox">map #{ ' + collapse_container() +
+          '<div term-proplist nested-data="termData.v"></div>}</div>';
     } else if (term.t == 's') {
       if (term.v.length < 1024) { // short strings
         return '&ldquo;<span class="value string">' + html_quote(term.v) +

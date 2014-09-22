@@ -99,11 +99,19 @@ to_json(Term) when is_port(Term) ->
   , {v, erl_print(Term)}
   , {pickle, base64:encode(term_to_binary(Term))}
   ]};
-
 to_json(Term) ->
-  {struct, [ {t, ?unknown_id}
-  , {v, erl_print(Term)}
-  ]}.
+  PossiblyMap = erlang:function_exported(maps, is_map, 1)
+    andalso erlang:is_map(Term),
+  case PossiblyMap of
+    true ->
+      {struct, [ {t, ?map_id}
+               , {v, lists:map(fun make_proplist_item/1, maps:to_list(Term))}
+               ]};
+    false ->
+      {struct, [ {t, ?unknown_id}
+      , {v, erl_print(Term)}
+      ]}
+  end.
 
 erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
 

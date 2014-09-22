@@ -11,7 +11,7 @@
 
 %% @doc Stores Term in internal ETS table, starts webserver (if not started)
 %% and returns URL where this term can be viewed in browser.
-show(Term) -> show(Term, "noname").
+show(Term) -> show(Term, "No name").
 show(Term, Title) ->
   tx_app:start(),
   Id = tx_store:store(Term, Title),
