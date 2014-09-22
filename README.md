@@ -6,9 +6,9 @@ web browser via webserver listening to localhost.
 
 ## What does it look like?
 
-![index](https://raw.github.com/kvakvs/tx/master/priv/img/readme_index.png)
-![show](https://raw.github.com/kvakvs/tx/master/priv/img/readme_show.png)
-![inspect](https://raw.github.com/kvakvs/tx/master/priv/img/readme_inspect_proplist.png)
+<img src="https://raw.github.com/kvakvs/tx/master/priv/img/readme_index.png" width="30%" />
+<img src="https://raw.github.com/kvakvs/tx/master/priv/img/readme_show.png" width="30%" />
+<img src="https://raw.github.com/kvakvs/tx/master/priv/img/readme_inspect_proplist.png" width="30%" />
 
 ## Features 
 
@@ -18,7 +18,7 @@ web browser via webserver listening to localhost.
       Clicking the URL in your console window will open web browser and load 
       a page with tree-like term structure.
 *  `tx:redbug(Spec)` and `tx:redbug(Spec, Options)`
-   *  If you have (Redbug)[http://github.com/massemanet/eper/] available, then
+   *  If you have [Redbug](http://github.com/massemanet/eper/) available, then
       tx will run `redbug:start` and capture events output, then store it in a
       regular way as a browsable term.
 *  Process and ports are "inspectable", just click one to see. 
@@ -58,6 +58,7 @@ The following line will show all sort of things in one term:
 
 Possible things to add of improve
 
+* Support compact display of value-only tuples and lists (multiple values per line)
 * Backend could recognize record definitions and supply field information to 
   frontend
 * Detect proplists and display as pairs
