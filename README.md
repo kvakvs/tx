@@ -46,7 +46,8 @@ All sorts of terms in one: `tx:show([<<123,32,1>>, <<1:1, 3:5, 45:7>>, <<"test\t
 make_ref(), self(), erlang:ports(), fun()->ok end, {fun erlang:ports/0, 'test', 
 "test"}]).`
 
-R17 maps example: `tx:show(#{k1 => "test", k2 => 'test', k3 => 123, k4 => <<"test">>})`
+R17 maps example: `tx:show(#{k1 => "test", k2 => 'test', k3 => 123, 
+k4 => <<"test">>}).`
 
 ## TODO
 

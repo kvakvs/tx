@@ -100,8 +100,8 @@ to_json(Term) when is_port(Term) ->
   , {pickle, base64:encode(term_to_binary(Term))}
   ]};
 to_json(Term) ->
-  PossiblyMap = erlang:function_exported(maps, is_map, 1)
-    andalso erlang:is_map(Term),
+  PossiblyMap = erlang:is_builtin(erlang, is_map, 1) andalso
+                erlang:is_map(Term),
   case PossiblyMap of
     true ->
       {struct, [ {t, ?map_id}
