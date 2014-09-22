@@ -4,18 +4,27 @@ This app was created to fill the void in the data visualisation area. And to
 help you follow "know your data" paradigm. Basically it shows you your data in 
 web browser via webserver listening to localhost. 
 
-Given an arbitrary term, saves it temporarily and creates an unique 
-URL to it (similar to Pastebin but with faster/manual expiration). Clicking the
-URL in your console window will open web browser and load a page with tree-like 
-term structure. Process and ports are "inspectable", just click one to see
-`process_info` or `port_info` in new browser tab. Proplists with printable
-keys are detected and formatted more compact.
-
-Uses only standard Erlang libraries (inets), no external dependencies.
+## What does it look like?
 
 ![index](https://raw.github.com/kvakvs/tx/master/priv/img/readme_index.png)
 ![show](https://raw.github.com/kvakvs/tx/master/priv/img/readme_show.png)
 ![inspect](https://raw.github.com/kvakvs/tx/master/priv/img/readme_inspect_proplist.png)
+
+## Features 
+
+*  `tx:show(Term)` and `tx:show(Term, Title)`
+   *  Given an arbitrary term, saves it temporarily and creates an unique 
+      URL to it (similar to Pastebin but with faster/manual expiration). 
+      Clicking the URL in your console window will open web browser and load 
+      a page with tree-like term structure.
+*  `tx:redbug(Spec)` and `tx:redbug(Spec, Options)`
+   *  If you have (Redbug)[http://github.com/massemanet/eper/] available, then
+      tx will run `redbug:start` and capture events output, then store it in a
+      regular way as a browsable term.
+*  Process and ports are "inspectable", just click one to see. 
+*  Proplists with printable keys are detected and formatted more compact.
+
+Uses only standard Erlang libraries (inets), no external dependencies.
 
 # How to begin
 
@@ -33,7 +42,8 @@ Application `tx` will be started automatically and web server will be opened on
 your first call of `tx:show/1`.
 
 Run manually via: `tx:start().`. Default port is 20000, and default host is 
-`localhost`.
+`localhost`. If you set port to 0 in tx.app.src, then tx will start on random 
+available port.
 
 
 # Example

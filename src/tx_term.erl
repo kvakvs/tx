@@ -146,7 +146,7 @@ is_proplist([{K, _} | Tail]) when is_atom(K) ->
 is_proplist([{K, _} | Tail])
   when (is_binary(K) andalso byte_size(K) < 128)
   orelse (is_list(K) andalso length(K) < 128) ->
-  case is_printable(atom_to_list(K)) of
+  case is_printable(tx_util:as_string(K)) of
     true -> is_proplist(Tail);
     false -> false
   end;

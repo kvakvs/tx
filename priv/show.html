@@ -28,7 +28,9 @@
       <button class="btn btn-default"
               ng-click="clickAllButtons('minus')">(—) Collapse all</button>
     </p>
-    <h3>Term {{show_id_title}}</h3>
+    <h3>Term {{show_id_title}}
+      <span ng-if="term_to_show.title">"{{term_to_show.title}}"</span>
+    </h3>
   </div>
   <div class="col-lg-5">
     <strong>Legend:</strong>
@@ -61,14 +63,14 @@
     <button class="btn btn-xs btn-default"
             onclick="$('div#raw_term').slideToggle(100);">Show Raw</button>
     <div id="raw_term" style="display:none">
-      <pre>{{raw_term}}</pre>
+      <pre>{{term_to_show.raw}}</pre>
     </div>
   </div>
 </div>
 
 <div class="row">
   <div class="col-lg-12">
-    <div term-show term-data="term_to_show" id="terms"></div>
+    <div term-show term-data="term_to_show.parsed" id="terms"></div>
   </div>
 </div>
 

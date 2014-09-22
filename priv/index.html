@@ -14,10 +14,14 @@
     <h1>TX Cache Contents</h1>
 
     <p>To explore some Erlang term, in your Erlang shell type
-      <code>tx:show(X).</code> where X is the value to display. The term will
-      be saved in tx's ETS table and you will get a (hopefully) clickable URL
-      in your console window, or you can copy it and open in browser. Or refresh
-      this page and click the corresponding show button.</p>
+      <code>tx:show(X).</code> or <code>tx:show(X, "some title").</code> where
+      X is the value to display. The term will be saved in tx's ETS table and
+      you will get a (hopefully) clickable URL in your console window, or you
+      can copy it and open in browser. Or refresh this page and click the
+      corresponding show button. If you have
+      <a href="https://github.com/massemanet/eper/">Redbug</a>
+      available, <code>tx:redbug(Spec)</code> or <code>tx:redbug(Spec,
+        Options)</code> will capture Redbug output and store it as a term.</p>
 
     <p><a href="/tx/tx_esi:delete?all" class="btn btn-danger">Delete all</a></p>
   </div>
@@ -27,26 +31,23 @@
   <div class="col-lg-12">
     <table class="table">
       <tr ng-show="term_list.length">
+        <th>Id</th>
         <th>Click me</th>
         <th>Created</th>
         <th>Expires in</th>
       </tr>
       <tr ng-repeat="term in term_list">
-        <td>
-          <a href="show.html?stored={{term.id}}">Show term #{{term.id}}</a>
-        </td>
-        <td>
-          {{unix_ts_to_date(term.created)}}
-        </td>
-        <td>
-          NYI (click delete)
-        </td>
+        <td>{{term.id}}</td>
+        <td width="50%"><a href="show.html?stored={{term.id}}">{{term.title}}</a></td>
+        <td>{{unix_ts_to_date(term.created)}}</td>
+        <td>NYI (click delete)</td>
       </tr>
     </table>
   </div>
   <div class="col-lg-10 col-lg-offset-1">
     <div class="alert alert-warning" role="alert" ng-show="!term_list.length">
-      No events yet. Please add some using <code>tx:show(Term).</code>
+      No events yet. Please add some using <code>tx:show/1-2</code> or
+      <code>tx:redbug/1-2</code> (if you have Redbug).
     </div>
   </div>
 </div>

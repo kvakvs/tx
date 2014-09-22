@@ -15,8 +15,7 @@ txApp.controller('TxShowCtrl', function ($scope, $http) {
   }
   // query server, it will give us parsed tree and raw string data
   $http.get('/tx/tx_esi:show?' + $scope.show_id).success(function (data) {
-    $scope.term_to_show = data.parsed;
-    $scope.raw_term     = data.raw;
+    $scope.term_to_show = data;
   });
 
   $scope.clickAllButtons = function(cls) {
