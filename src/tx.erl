@@ -25,20 +25,26 @@ show(Term, Title) ->
 %% accumulates values it prints, then after Redbug is finished, accumulated
 %% list of trace events is published via show(List, "Redbug trace")
 redbug(Spec) -> redbug(Spec, []).
-redbug(Spec, Options0) ->
+redbug(Spec, Options) ->
+  spawn(fun() -> redbug_async(Spec, Options) end).
+
+%%%=============================================================================
+%% @private
+%% @doc Built-in timeouts guarantee that lifetime of this process won't be
+%% longer than redbug timeout times 3.
+redbug_async(Spec, Options0) ->
   %% Algorithm:
   %% 1. Spawn accumulator process which will receive printed events (we can't
   %% receive in current process because Redbug receives everything)
   %% 2. Start redbug and wait for it to die or wait for 3xtimeout and kill it
   %% 3. Signal accumulator process that we want results, it will send us results
   %% and exit. If waiting timed out - kill it.
-
-  AccumulatorFn = spawn(fun() -> redbug_accumulate_loop([]) end),
+  AccumulatorPid = spawn(fun() -> redbug_accumulate_loop([]) end),
 
   %% Get old value of print_fun (if was set) and chain it after our print
   PreviousPrinter = proplists:get_value(print_fun, Options0, fun(_) -> ok end),
   MyPrinter = fun(Event) ->
-                AccumulatorFn ! {redbug_printout, Event},
+                AccumulatorPid ! {redbug_printout, Event},
                 PreviousPrinter(Event)
               end,
   Options = [{print_fun, MyPrinter} | lists:keydelete(print_fun, 1, Options0)],
@@ -54,19 +60,19 @@ redbug(Spec, Options0) ->
     erlang:exit(erlang:whereis(redbug), kill) % nope
   end,
   %% Signal out accumulator function that its time to yield and die
-  AccumulatorFn ! {accumulator_finish, self()},
+  AccumulatorPid ! {accumulator_finish, self()},
   receive
     {accumulated_result, Accum} ->
       case Accum of
-        [] -> "[tx] nothing from Redbug"; % not printed!
-        _  -> show(Accum, "Redbug trace") % URL from show won't be printed!
+        [] -> io:format("[tx] nothing from Redbug~n");
+        _  -> io:format(show(Accum, "Redbug trace"))
       end
     after 2000 ->
-      erlang:exit(AccumulatorFn, kill),
-      "[tx] something went wrong. Waiting for accumulated redbug results timed out"
+      erlang:exit(AccumulatorPid, kill),
+      io:format("[tx] something went wrong. Waiting for accumulated "
+                "redbug results timed out~n")
   end.
 
-%%%=============================================================================
 %% @private
 redbug_accumulate_loop(Accum) ->
   receive
