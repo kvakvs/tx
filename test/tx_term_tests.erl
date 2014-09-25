@@ -6,9 +6,9 @@
 -module(tx_term_tests).
 
 %% API
--export([utf8_bad_term_test/0]).
+-export([one_test/0, two_test/0]).
 
-utf8_bad_term_test() ->
+one_test() ->
   X = {error,{asn1,{wrong_tag,{{expected,16},
     {got,131073,
       {131073,
@@ -36,4 +36,30 @@ utf8_bad_term_test() ->
                 [{131073,
                   <<145,151,32,130,147,149,241>>}]}]}]}}}}}},
 %%   io:format(user, "~p.", [tx_term:to_json(X)]).
+  tx:show(X).
+
+two_test() ->
+  X = {'InitialDPArg',750,asn1_NOVALUE,
+    [3,19,102,86,115,48],
+    "\n",asn1_NOVALUE,asn1_NOVALUE,
+    [132,19,153,99,6],
+    asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,
+    {bearerCap,[128,144,163]},
+    collectedInfo,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,
+    asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,
+    [52,8,17,0,134,131,8,248],
+    asn1_NOVALUE,
+    {'LocationInformation',2,asn1_NOVALUE,
+      [145,153,99,54,153,0,243],
+      asn1_NOVALUE,
+      {cellGlobalIdOrServiceAreaIdFixedLength,
+        [52,248,16,23,115,92,123]},
+      asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE,
+      asn1_NOVALUE,asn1_NOVALUE,asn1_NOVALUE},
+    {'ext-Teleservice',[17]},
+    [28,4,10,6,37],
+    [145,153,99,54,153,0,243],
+    [145,153,99,103,100,135,249],
+    [2,65,96,50,17,130,36,2],
+    asn1_NOVALUE,asn1_NOVALUE},
   tx:show(X).

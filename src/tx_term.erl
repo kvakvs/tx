@@ -7,7 +7,7 @@
 -module(tx_term).
 
 %% API
--export([to_json/1, inspect/1]).
+-export([to_json/1, inspect/1, is_valid_utf8/1, has_all_printable_characters/1]).
 
 -define(list_id,      l).
 -define(proplist_id,  'prop').
@@ -35,7 +35,7 @@ make_proplist_item({K, V}) ->
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
 %% unrecognized_type), and value stored as string or list where appropriate in v
 to_json(Term) when is_list(Term) ->
-  case has_all_printable_characters(Term) of
+  case has_all_printable_characters(Term) andalso is_valid_utf8(Term) of
     false ->
       case is_proplist(Term) of
         true ->
@@ -117,7 +117,7 @@ erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
 
 erl_print_binary(T) ->
   case has_all_printable_characters(binary_to_list(T))
-    andalso is_valid_utf8(T) of
+        andalso is_valid_utf8(T) of
     true  -> T;
     false -> strip_angle_brackets(erl_print(T))
 %%     false -> list_to_binary(format_binary(T, []))
@@ -142,6 +142,7 @@ has_all_printable_characters([X | _T])
     andalso (X < 32 orelse X > 255) -> false;
 has_all_printable_characters([_ | T]) -> has_all_printable_characters(T).
 
+is_valid_utf8(L) when is_list(L) -> is_valid_utf8(tx_util:as_binary(L));
 is_valid_utf8(Bin) ->
   case unicode:characters_to_binary(Bin, utf8) of
     Something when is_binary(Something) -> true;
