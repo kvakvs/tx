@@ -25,23 +25,6 @@
 -define(map_id,       m).     % NYI
 -define(unknown_id,   unknown).
 
-make_proplist_item({K, V}) ->
-  {struct, [ {k, to_json(K)}
-           , {v, to_json(V)}
-  ]}.
-
-%% @private
-%% @doc Returns pair: list of JSONified structures, and list termination
-%% element, which can be [] or any other term for improper lists
--spec maybe_improper_list_to_array(maybe_improper_list(), list()) ->
-  {[{struct, any()}], any()}.
-maybe_improper_list_to_array([], Accum) ->
-  {lists:reverse(Accum), []};
-maybe_improper_list_to_array(Last, Accum) when not is_list(Last) ->
-  {lists:reverse(Accum), Last};
-maybe_improper_list_to_array([Head | Tail], Accum) ->
-  maybe_improper_list_to_array(Tail, [to_json(Head) | Accum]).
-
 %% @doc Formats term as JSON. Each value is represented by JSON dictionary
 %% (hash) with type stored in 't' (values: l=list, t=tuple, f=float,
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
@@ -50,7 +33,7 @@ to_json(Term) when is_list(Term) ->
   case has_all_printable_characters(Term) andalso is_valid_utf8(Term) of
     false ->
       case classify_list(Term) of
-        printable_list ->
+        printable_keys_proplist ->
           {struct, [ {t, ?proplist_id}
                    , {v, lists:map(fun make_proplist_item/1, Term)}
           ]};
@@ -177,7 +160,7 @@ inspect(Port) when is_port(Port) ->
 
 %% @private
 classify_list([]) ->
-  printable_list;
+  printable_keys_proplist;
 classify_list(X) when not is_list(X) ->
   improper_list; % improper lists are not proplists
 classify_list([{K, _} | Tail]) when is_atom(K) ->
@@ -187,7 +170,25 @@ classify_list([{K, _} | Tail])
   orelse (is_list(K) andalso length(K) < 128) ->
   case has_all_printable_characters(tx_util:as_string(K))
         andalso is_valid_utf8(K) of
-    true -> is_proplist(Tail);
-    false -> false
+    true -> classify_list(Tail);
+    false -> regular_list
   end;
 classify_list(_) -> regular_list.
+
+%% @private
+make_proplist_item({K, V}) ->
+  {struct, [ {k, to_json(K)}
+           , {v, to_json(V)}
+           ]}.
+
+%% @private
+%% @doc Returns pair: list of JSONified structures, and list termination
+%% element, which can be [] or any other term for improper lists
+-spec maybe_improper_list_to_array(maybe_improper_list(), list()) ->
+  {[{struct, any()}], any()}.
+maybe_improper_list_to_array([], Accum) ->
+  {lists:reverse(Accum), []};
+maybe_improper_list_to_array(Last, Accum) when not is_list(Last) ->
+  {lists:reverse(Accum), Last};
+maybe_improper_list_to_array([Head | Tail], Accum) ->
+  maybe_improper_list_to_array(Tail, [to_json(Head) | Accum]).

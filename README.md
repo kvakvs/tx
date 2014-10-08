@@ -44,7 +44,7 @@ Simple demo: `tx:show(application:which_applications()).`
 
 All sorts of terms in one: `tx:show([<<123,32,1>>, <<1:1, 3:5, 45:7>>, <<"test\ttest">>, 123, 123.321, 
 make_ref(), self(), erlang:ports(), fun()->ok end, {fun erlang:ports/0, 'test', 
-"test"}]).`
+"test"}, [{test, value1}, {fgsfds, 1000}], [1,2,3|{4, [5|test]}]]).`
 
 R17 maps example: `tx:show(#{k1 => "test", k2 => 'test', k3 => 123, 
 k4 => <<"test">>}).`
