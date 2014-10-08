@@ -15,6 +15,12 @@ div.listbox {
   padding: 2px;
   margin-bottom: 2px;
 }
+.improperlist:before {
+  content: 'improper list ';
+}
+.listbox .improperlisttail {
+  border: 1px solid #e95;
+}
 
 .value {
   border: 1px solid #eee;

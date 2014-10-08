@@ -65,8 +65,21 @@ txApp.directive('termShow', function($compile){
 
   var term_template = function (term) {
     if (term.t == 'l') {
-      return '<div class="listbox">[ ' + collapse_container() +
-          '<div term-collection nested-data="termData.v"></div>]</div>';
+      var result = '';
+      if (term.tail_element) {
+        result += '<div class="listbox improperlist">[ ';
+      } else {
+        result += '<div class="listbox">[ ';
+      }
+      result += collapse_container() +
+          '<div term-collection nested-data="termData.v"></div>';
+      if (term.tail_element) {
+        result += '<div class="indent improperlisttail">' +
+            '<div term-show term-data="termData.tail_element"></div>' +
+            '</div>';
+      }
+      result += ']</div>';
+      return result;
     } else if (term.t == 't') {
       return '<div class="tuplebox">{ ' + collapse_container() +
           '<div term-collection nested-data="termData.v"></div>}</div>';

@@ -30,6 +30,18 @@ make_proplist_item({K, V}) ->
            , {v, to_json(V)}
   ]}.
 
+%% @private
+%% @doc Returns pair: list of JSONified structures, and list termination
+%% element, which can be [] or any other term for improper lists
+-spec maybe_improper_list_to_array(maybe_improper_list(), list()) ->
+  {[{struct, any()}], any()}.
+maybe_improper_list_to_array([], Accum) ->
+  {lists:reverse(Accum), []};
+maybe_improper_list_to_array(Last, Accum) when not is_list(Last) ->
+  {lists:reverse(Accum), Last};
+maybe_improper_list_to_array([Head | Tail], Accum) ->
+  maybe_improper_list_to_array(Tail, [to_json(Head) | Accum]).
+
 %% @doc Formats term as JSON. Each value is represented by JSON dictionary
 %% (hash) with type stored in 't' (values: l=list, t=tuple, f=float,
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
@@ -37,15 +49,24 @@ make_proplist_item({K, V}) ->
 to_json(Term) when is_list(Term) ->
   case is_printable(Term) of
     false ->
-      case is_proplist(Term) of
-        true ->
+      case classify_list(Term) of
+        printable_list ->
           {struct, [ {t, ?proplist_id}
                    , {v, lists:map(fun make_proplist_item/1, Term)}
           ]};
-        false ->
-          {struct, [ {t, ?list_id}
-                   , {v, {array, [to_json(Value) || Value <- Term]}}
-          ]}
+        ListType when ListType =:= regular_list
+               orelse ListType =:= improper_list ->
+          case maybe_improper_list_to_array(Term, []) of
+            {Array, []} ->
+              {struct, [ {t, ?list_id}
+                       , {v, {array, Array}}
+              ]};
+            {Array, Tail} ->
+              {struct, [ {t, ?list_id}
+                       , {v, {array, Array}}
+                       , {tail_element, to_json(Tail)}
+                       ]}
+          end
       end;
     true ->
       {struct, [ {t, ?string_id}
@@ -135,6 +156,7 @@ strip_angle_brackets(<<"<<", _/binary>> = Tail) ->
 %%   format_binary(Rest, [Txt | Accum]).
 
 is_printable([]) -> true;
+is_printable(X) when not is_list(X) -> false; % improper lists are not printable
 is_printable([X | _T]) when not is_integer(X) -> false;
 is_printable([X | _T])
   when X =/= 9 andalso X =/= 10 andalso X =/= 13
@@ -147,15 +169,17 @@ inspect(Port) when is_port(Port) ->
   erlang:port_info(Port).
 
 %% @private
-is_proplist([]) ->
-  true;
-is_proplist([{K, _} | Tail]) when is_atom(K) ->
-  is_proplist(Tail);
-is_proplist([{K, _} | Tail])
+classify_list([]) ->
+  printable_list;
+classify_list(X) when not is_list(X) ->
+  improper_list; % improper lists are not proplists
+classify_list([{K, _} | Tail]) when is_atom(K) ->
+  classify_list(Tail);
+classify_list([{K, _} | Tail])
   when (is_binary(K) andalso byte_size(K) < 128)
   orelse (is_list(K) andalso length(K) < 128) ->
   case is_printable(tx_util:as_string(K)) of
-    true -> is_proplist(Tail);
-    false -> false
+    true -> classify_list(Tail);
+    false -> regular_list
   end;
-is_proplist(_) -> false.
+classify_list(_) -> regular_list.
