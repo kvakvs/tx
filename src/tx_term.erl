@@ -7,7 +7,7 @@
 -module(tx_term).
 
 %% API
--export([to_json/1, inspect/1]).
+-export([to_json/1, inspect/1, is_valid_utf8/1, has_all_printable_characters/1]).
 
 -define(list_id,      l).
 -define(proplist_id,  'prop').
@@ -47,7 +47,7 @@ maybe_improper_list_to_array([Head | Tail], Accum) ->
 %% a=atom, i=integer, bs=bitstring, b=binary, pid, ref, fun, port and
 %% unrecognized_type), and value stored as string or list where appropriate in v
 to_json(Term) when is_list(Term) ->
-  case is_printable(Term) of
+  case has_all_printable_characters(Term) andalso is_valid_utf8(Term) of
     false ->
       case classify_list(Term) of
         printable_list ->
@@ -137,7 +137,8 @@ to_json(Term) ->
 erl_print(T) -> iolist_to_binary(io_lib:format("~p", [T])).
 
 erl_print_binary(T) ->
-  case is_printable(binary_to_list(T)) of
+  case has_all_printable_characters(binary_to_list(T))
+        andalso is_valid_utf8(T) of
     true  -> T;
     false -> strip_angle_brackets(erl_print(T))
 %%     false -> list_to_binary(format_binary(T, []))
@@ -155,13 +156,19 @@ strip_angle_brackets(<<"<<", _/binary>> = Tail) ->
 %%   Txt = integer_to_list(Byte),
 %%   format_binary(Rest, [Txt | Accum]).
 
-is_printable([]) -> true;
-is_printable(X) when not is_list(X) -> false; % improper lists are not printable
-is_printable([X | _T]) when not is_integer(X) -> false;
-is_printable([X | _T])
+has_all_printable_characters([]) -> true;
+has_all_printable_characters([X | _T]) when not is_integer(X) -> false;
+has_all_printable_characters([X | _T])
   when X =/= 9 andalso X =/= 10 andalso X =/= 13
     andalso (X < 32 orelse X > 255) -> false;
-is_printable([_ | T]) -> is_printable(T).
+has_all_printable_characters([_ | T]) -> has_all_printable_characters(T).
+
+is_valid_utf8(L) when is_list(L) -> is_valid_utf8(tx_util:as_binary(L));
+is_valid_utf8(Bin) ->
+  case unicode:characters_to_binary(Bin, utf8) of
+    Something when is_binary(Something) -> true;
+    _ -> false
+  end.
 
 inspect(Pid) when is_pid(Pid) ->
   erlang:process_info(Pid);
@@ -178,8 +185,9 @@ classify_list([{K, _} | Tail]) when is_atom(K) ->
 classify_list([{K, _} | Tail])
   when (is_binary(K) andalso byte_size(K) < 128)
   orelse (is_list(K) andalso length(K) < 128) ->
-  case is_printable(tx_util:as_string(K)) of
-    true -> classify_list(Tail);
-    false -> regular_list
+  case has_all_printable_characters(tx_util:as_string(K))
+        andalso is_valid_utf8(K) of
+    true -> is_proplist(Tail);
+    false -> false
   end;
 classify_list(_) -> regular_list.

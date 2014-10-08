@@ -577,6 +577,7 @@ tokenize(B, S=#decoder{offset=O}) ->
 %%
 %% Tests
 %%
+-ifdef(ALLOW_MOCHIJSON_TESTS).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 
@@ -886,4 +887,5 @@ format_test_() ->
                    {eep18, {P}},
                    {proplist, P}]].
 
+-endif.
 -endif.
